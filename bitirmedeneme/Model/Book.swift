@@ -15,6 +15,16 @@ struct Book: Identifiable, Codable {
     var genre: String
     var userId: String?
 
+    var dictionary: [String: Any] {
+        return [
+            "id": id ?? "",
+            "title": title,
+            "author": author,
+            "genre": genre,
+            "userId": userId ?? ""
+        ]
+    }
+
     enum CodingKeys: String, CodingKey {
         case id
         case title
