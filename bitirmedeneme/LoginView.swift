@@ -17,37 +17,48 @@ struct LoginView: View {
     @State private var isLoggedIn: Bool = false
 
     var body: some View {
-        VStack {
-            TextField("Email", text: $email)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
+        NavigationView {
+            VStack {
+                TextField("Email", text: $email)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+
+                SecureField("Şifre", text: $password)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+                    
+                    
+
+                if let error = loginError {
+                    Text("Hata: \(error.localizedDescription)")
+                        .foregroundColor(.red)
+                }
+
+                NavigationLink(destination: HomeView(bookViewModel: BookViewModel()), isActive: $isLoggedIn) {
+                    EmptyView()
+                }
+
+                Button(action: {
+                    login()
+                }) {
+                    Text("Giriş Yap")
+                }
                 .padding()
 
-            SecureField("Şifre", text: $password)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-
-            if let error = loginError {
-                Text("Hata: \(error.localizedDescription)")
-                    .foregroundColor(.red)
-            }
-
-            Button(action: {
-                login()
-            }) {
-                Text("Giriş Yap")
+                Spacer()
             }
             .padding()
-
-            Spacer()
-        }
-        .padding()
-        .onAppear {
-            // Eğer kullanıcı kayıt olma ekranından yönlendirilmişse, otomatik olarak giriş yap
-            if isLoggedIn {
-                // Burada ana sayfaya geçiş yapabilirsiniz
+            .onAppear {
+                // Eğer kullanıcı kayıt olma ekranından yönlendirilmişse, otomatik olarak giriş yap
+                if isLoggedIn {
+                    // Burada ana sayfaya geçiş yapabilirsiniz
+                }
             }
+           // .navigationBarTitle("Giriş Yap")
+            .navigationBarBackButtonHidden(true)
         }
-        .navigationBarTitle("Giriş Yap")
     }
 
     func login() {
@@ -68,4 +79,5 @@ struct LoginView_Previews: PreviewProvider {
         LoginView()
     }
 }
+
 

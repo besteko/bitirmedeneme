@@ -21,14 +21,19 @@ struct RegisterView: View {
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
+                    .autocapitalization(.none)
+                    .disableAutocorrection(true)
+                    
 
                 SecureField("Şifre", text: $password)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
+                    .textContentType(.newPassword)
 
                 SecureField("Şifreyi Onayla", text: $confirmPassword)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
+                    
 
                 if let error = registrationError {
                     Text("Hata: \(error.localizedDescription)")
@@ -49,7 +54,8 @@ struct RegisterView: View {
                 Spacer()
             }
             .padding()
-            .navigationBarTitle("Kayıt Ol")
+           // .navigationBarTitle("Kayıt Ol")
+            .navigationBarBackButtonHidden(true)
         }
     }
 
