@@ -17,7 +17,7 @@ struct AddBookView: View {
     @State private var showingAlert = false
 
     var body: some View {
-        NavigationView {
+       // NavigationView {
             VStack {
                 TextField("Kitap Adı", text: $title)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -41,8 +41,9 @@ struct AddBookView: View {
                     Alert(title: Text("Hata"), message: Text("Kitap eklenirken bir hata oluştu."), dismissButton: .default(Text("Tamam")))
                 }
                 .navigationTitle("Kitap Ekle")
+                .navigationBarBackButtonHidden(true)
             }
-        }
+        //}
     }
 
     func addBook() {

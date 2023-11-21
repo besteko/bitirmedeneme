@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9A0493542B0CA54C0050FDDE /* SplashScreen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0493532B0CA54C0050FDDE /* SplashScreen.swift */; };
 		9A8D90A92B08DFBA00F043B7 /* bitirmedenemeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D90A82B08DFBA00F043B7 /* bitirmedenemeApp.swift */; };
 		9A8D90AB2B08DFBA00F043B7 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D90AA2B08DFBA00F043B7 /* RegisterView.swift */; };
 		9A8D90AD2B08DFBB00F043B7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A8D90AC2B08DFBB00F043B7 /* Assets.xcassets */; };
@@ -51,6 +52,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9A0493532B0CA54C0050FDDE /* SplashScreen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashScreen.swift; sourceTree = "<group>"; };
 		9A8D90A52B08DFBA00F043B7 /* bitirmedeneme.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bitirmedeneme.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A8D90A82B08DFBA00F043B7 /* bitirmedenemeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bitirmedenemeApp.swift; sourceTree = "<group>"; };
 		9A8D90AA2B08DFBA00F043B7 /* RegisterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterView.swift; sourceTree = "<group>"; };
@@ -150,6 +152,7 @@
 				9A8D90F42B0904A000F043B7 /* SearchBar.swift */,
 				9A8D90F62B09059800F043B7 /* BookDetailView.swift */,
 				9A8D90F82B0905CF00F043B7 /* BookRowView.swift */,
+				9A0493532B0CA54C0050FDDE /* SplashScreen.swift */,
 			);
 			path = bitirmedeneme;
 			sourceTree = "<group>";
@@ -345,6 +348,7 @@
 				9A8D90AB2B08DFBA00F043B7 /* RegisterView.swift in Sources */,
 				9A8D90E62B08F8DB00F043B7 /* Book.swift in Sources */,
 				9A8D90A92B08DFBA00F043B7 /* bitirmedenemeApp.swift in Sources */,
+				9A0493542B0CA54C0050FDDE /* SplashScreen.swift in Sources */,
 				9A8D90F52B0904A000F043B7 /* SearchBar.swift in Sources */,
 				9A8D90F72B09059800F043B7 /* BookDetailView.swift in Sources */,
 				9A8D90EB2B08F98200F043B7 /* BookViewModel.swift in Sources */,

@@ -12,7 +12,7 @@ struct HomeView: View {
     @ObservedObject var bookViewModel: BookViewModel
 
     var body: some View {
-        NavigationView {
+       // NavigationView {
             VStack {
                 // Rastgele kitapları göster
                 Text("Rastgele Kitaplar")
@@ -37,7 +37,8 @@ struct HomeView: View {
                 }
             }
             .navigationBarTitle("Ana Sayfa")
-        }
+            .navigationBarBackButtonHidden(true)
+        //}
     }
 }
 

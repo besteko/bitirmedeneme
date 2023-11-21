@@ -17,7 +17,7 @@ struct LoginView: View {
     @State private var isLoggedIn: Bool = false
 
     var body: some View {
-        NavigationView {
+       // NavigationView {
             VStack {
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -58,7 +58,7 @@ struct LoginView: View {
             }
            // .navigationBarTitle("Giriş Yap")
             .navigationBarBackButtonHidden(true)
-        }
+        //}
     }
 
     func login() {
