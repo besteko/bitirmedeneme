@@ -6,60 +6,134 @@
 //
 
 import SwiftUI
+import Firebase
 import FirebaseAuth
-import FirebaseStorage
+import FirebaseDatabase
 
 struct AddBookView: View {
     @ObservedObject var bookViewModel: BookViewModel
     @State private var title = ""
     @State private var author = ""
     @State private var genre = ""
-    @State private var showingAlert = false
-
+    @State private var selectedImage: UIImage?
+    @State private var isImagePickerPresented = false
+    @State private var showAlert = false
+    @State private var alertMessage = ""
+    
     var body: some View {
-       // NavigationView {
-            VStack {
-                TextField("Kitap Adı", text: $title)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-
-                TextField("Yazar", text: $author)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-
-                TextField("Tür", text: $genre)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-
-                Button(action: {
-                    addBook()
-                }) {
-                    Text("Kitap Ekle")
+        NavigationView {
+            Form {
+                Section {
+                    TextField("Kitap Adı", text: $title)
+                    TextField("Yazar", text: $author)
+                    TextField("Tür", text: $genre)
                 }
-                .padding()
-                .alert(isPresented: $showingAlert) {
-                    Alert(title: Text("Hata"), message: Text("Kitap eklenirken bir hata oluştu."), dismissButton: .default(Text("Tamam")))
+                
+                Section {
+                    Button(action: {
+                        // Resim seçiciyi aç
+                        isImagePickerPresented.toggle()
+                    }) {
+                        HStack {
+                            Image(systemName: "photo")
+                            Text("Kitap Fotoğrafı Seç")
+                        }
+                    }
+                    .sheet(isPresented: $isImagePickerPresented) {
+                        ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented)
+                    }
+                    
+                    // Seçilen resmi göster
+                    if let selectedImage = selectedImage {
+                        Image(uiImage: selectedImage)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(height: 150)
+                    }
                 }
-                .navigationTitle("Kitap Ekle")
-                .navigationBarBackButtonHidden(true)
+                
+                Section {
+                    Button("Kitabı Ekle") {
+                        addBook()
+                    }
+                }
             }
-        //}
+            .alert(isPresented: $showAlert) {
+                Alert(title: Text("Uyarı"), message: Text(alertMessage), dismissButton: .default(Text("Tamam")))
+            }
+            .navigationTitle("Kitap Ekle")
+        }
     }
-
-    func addBook() {
-        let newBook = Book(title: title, author: author, genre: genre)
-        bookViewModel.addBook(book: newBook) { error in
+    
+    private func addBook() {
+        guard let currentUser = Auth.auth().currentUser else {
+            print("Kullanıcı oturumu açmamış.")
+            return
+        }
+        
+        var newBook = Book(
+            title: title,
+            author: author,
+            genre: genre,
+            userId: currentUser.uid, // Kullanıcının UID'si
+            imageUrl: nil,
+            isBorrowed: false
+        )
+        
+        // Firebase veritabanına ekle
+        let ref = Database.database().reference().child("books").childByAutoId()
+        
+        // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
+        ref.setValue(newBook.dictionary) { (error, _) in
             if let error = error {
-                print("Hata: \(error.localizedDescription)")
-                showingAlert = true
+                print("Hata oluştu: \(error.localizedDescription)")
+                showAlert(message: "Kitap eklenirken bir hata oluştu.")
             } else {
-                print("Kitap başarıyla eklendi")
-                // Kitap başarıyla eklendi, ana sayfaya geri dön
-                bookViewModel.fetchBooks(forUserId: Auth.auth().currentUser?.uid ?? "")
+                // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
+                let bookID = ref.key
+                newBook.id = bookID
+                
+                // Kitabı ViewModel üzerinden ekleyin
+                bookViewModel.addBook(book: newBook) { (error) in
+                    if let error = error {
+                        print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
+                        showAlert(message: "Kitap eklenirken bir hata oluştu.")
+                    } else {
+                        // Kitap başarıyla ViewModel'a eklendi
+                        showAlert(message: "Kitap başarıyla eklendi.")
+                        resetForm() // Formu sıfırla
+                    }
+                }
             }
         }
     }
+    private func resetForm() {
+        // Formdaki değerleri sıfırla
+        title = ""
+        author = ""
+        genre = ""
+        selectedImage = nil
+    }
+    
+    // showAlert fonksiyonunu tanımla
+    private func showAlert(message: String) {
+        alertMessage = message
+        showAlert = true
+    }
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

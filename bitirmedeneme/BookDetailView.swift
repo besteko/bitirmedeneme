@@ -9,30 +9,71 @@ import SwiftUI
 
 struct BookDetailView: View {
     var book: Book
+    @ObservedObject var bookViewModel: BookViewModel
 
     var body: some View {
-        VStack(alignment: .leading) {
+        VStack {
+            if let imageDataString = book.imageDataString,
+               let imageData = Data(base64Encoded: imageDataString),
+               let uiImage = UIImage(data: imageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 150)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.bottom, 10)
+            } else {
+                Image(systemName: "book")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 150)
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .padding(.bottom, 10)
+            }
+
             Text(book.title)
                 .font(.title)
                 .padding(.bottom, 5)
 
             Text("Yazar: \(book.author)")
-                .font(.subheadline)
-                .foregroundColor(.gray)
                 .padding(.bottom, 10)
 
-            Text("Tür: \(book.genre)")
-                .font(.subheadline)
-                .foregroundColor(.blue)
-                .padding(.bottom, 10)
+            Text(book.isBorrowed ? "Ödünç Alındı" : "Müsait")
+                .foregroundColor(book.isBorrowed ? .red : .green)
+                .bold()
+                .padding()
+
+            Button(action: {
+                // Kitabı ödünç al veya iade etme işlemleri burada gerçekleştirilebilir.
+                if book.isBorrowed {
+                    // Kitap ödünç alındıysa iade et
+                    bookViewModel.returnBook(book: book) { error in
+                        if let error = error {
+                            // İade işleminde hata olursa burada işlemler yapılabilir
+                            print("Kitap iade edilemedi: \(error.localizedDescription)")
+                        } else {
+                            // İade başarılı, belki başka bir şey yapabilirsiniz
+                            print("Kitap başarıyla iade edildi")
+                        }
+                    }
+                } else {
+                    // Kitap müsaitse ödünç al
+                    // Bu kısımda ödünç alma işlemleri yapılabilir
+                }
+            }) {
+                Text(book.isBorrowed ? "İade Et" : "Ödünç Al")
+                    .padding()
+                    .background(book.isBorrowed ? Color.red : Color.green)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+            }
 
             Spacer()
-
-            // Buraya kitabın diğer detayları eklenebilir.
-
         }
         .padding()
-        .navigationBarTitle(Text(book.title), displayMode: .inline)
+        .navigationTitle(book.title)
     }
 }
+
+
 

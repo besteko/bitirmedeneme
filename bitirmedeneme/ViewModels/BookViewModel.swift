@@ -4,67 +4,105 @@
 //
 //  Created by Beste Kocaoglu on 18.11.2023.
 //
-import Foundation
-import FirebaseStorage
-import FirebaseFirestore
+import SwiftUI
+import Firebase
 import FirebaseAuth
-
+import FirebaseDatabase
 
 class BookViewModel: ObservableObject {
     @Published var books: [Book] = []
-    @Published var filteredBooks: [Book] = []
-    @Published var searchText: String = ""
-    @Published var genres: [String] = []
+    @Published private(set) var genres: [String] = []
 
-    private var db = Firestore.firestore()
+    private var dbRef: DatabaseReference?
 
-    func fetchBooks(forUserId userId: String) {
-        db.collection("books").whereField("userId", isEqualTo: userId).addSnapshotListener { (querySnapshot, error) in
-            guard let documents = querySnapshot?.documents else {
-                print("Hata: \(error?.localizedDescription ?? "Bilinmeyen bir hata oluştu.")")
-                return
+    init() {
+        configureDatabase()
+        fetchBooks()
+    }
+
+    private func configureDatabase() {
+        dbRef = Database.database().reference().child("books")
+    }
+
+    private func fetchBooks() {
+        dbRef?.observe(.value, with: { [weak self] snapshot in
+            var newBooks: [Book] = []
+            var newGenres: [String] = []
+
+            for child in snapshot.children {
+                if let snapshot = child as? DataSnapshot,
+                   let data = snapshot.value as? [String: Any],
+                   let bookData = try? JSONSerialization.data(withJSONObject: data),
+                   let decodedBook = try? JSONDecoder().decode(Book.self, from: bookData) {
+                    newBooks.append(decodedBook)
+
+                    // Kitap türünü genres listesine ekle
+                    if let genre = decodedBook.genre,
+                       !genre.isEmpty {
+                        newGenres.append(contentsOf: genre.components(separatedBy: ", "))
+                    }
+                }
             }
 
-            self.books = documents.compactMap { queryDocumentSnapshot in
-                try? queryDocumentSnapshot.data(as: Book.self)
-            }
-
-            // Tüm kitap türlerini al
-            self.genres = Array(Set(self.books.map { $0.genre }))
-
-            // Kitapları filtrele
-            self.filterBooks()
-        }
+            self?.books = newBooks
+            self?.genres = Array(Set(newGenres.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) })) // Duplicates'ları temizle
+        })
     }
 
     func addBook(book: Book, completion: @escaping (Error?) -> Void) {
-        do {
-            var mutableBook = book
-            mutableBook.userId = Auth.auth().currentUser?.uid
+        guard let userId = Auth.auth().currentUser?.uid else {
+            let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
+            completion(error)
+            return
+        }
 
-            let _ = try? db.collection("books").addDocument(data: mutableBook.dictionary) { error in
-                completion(error)
-                if let error = error {
-                    print("Hata: \(error.localizedDescription)")
-                } else {
-                    print("Kitap eklendi")
-                }
-            }
-        } catch {
-            print("Hata: \(error.localizedDescription)")
+        var updatedBook = book
+        updatedBook.userId = userId
+
+        let bookRef = dbRef?.childByAutoId()
+        bookRef?.setValue(updatedBook.dictionary) { (error, _) in
             completion(error)
         }
     }
 
+    func removeBook(bookID: String, completion: @escaping (Error?) -> Void) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
+            completion(error)
+            return
+        }
 
+        let bookRef = dbRef?.child(bookID)
+        bookRef?.removeValue { (error, _) in
+            completion(error)
+        }
+    }
 
+    func returnBook(book: Book, completion: @escaping (Error?) -> Void) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
+            completion(error)
+            return
+        }
 
-    func filterBooks() {
-        if searchText.isEmpty {
-            filteredBooks = books
-        } else {
-            filteredBooks = books.filter { $0.title.localizedCaseInsensitiveContains(searchText) || $0.author.localizedCaseInsensitiveContains(searchText) }
+        guard let updatedBookIndex = books.firstIndex(where: { $0.id == book.id }) else {
+            let error = NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Kitap bulunamadı."])
+            completion(error)
+            return
+        }
+
+        // İade işlemlerini burada gerçekleştirin
+        // Örneğin: books[updatedBookIndex].isBorrowed = false
+
+        // Güncellenmiş kitabı Firebase veritabanına yazma
+        let bookRef = dbRef?.child(book.id ?? "")
+        bookRef?.setValue(books[updatedBookIndex].dictionary) { (error, _) in
+            completion(error)
         }
     }
 }
+
+
+
+
 

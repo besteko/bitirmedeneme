@@ -7,38 +7,54 @@
 
 import SwiftUI
 
-
 struct HomeView: View {
-    @ObservedObject var bookViewModel: BookViewModel
+    var bookViewModel = BookViewModel()
 
     var body: some View {
-       // NavigationView {
-            VStack {
-                // Rastgele kitapları göster
-                Text("Rastgele Kitaplar")
-                    .font(.title)
-
-                BookListView(bookViewModel: bookViewModel)
-
-                // Kitap türlerine göre filtrelenmiş kitapları göster
-                ForEach(bookViewModel.genres, id: \.self) { genre in
-                    NavigationLink(destination: FilteredBooksView(bookViewModel: bookViewModel, selectedGenre: genre)) {
-                        Text("\(genre) Kitapları")
-                            .font(.title2)
-                            .foregroundColor(.blue)
-                    }
-                }
-
-                // Kitap ekleme sayfasına yönlendirme
-                NavigationLink(destination: AddBookView(bookViewModel: bookViewModel)) {
-                    Text("Kitap Ekle")
-                        .font(.title2)
-                        .foregroundColor(.green)
-                }
+        TabView {
+            NavigationView {
+                BookCardListView(bookViewModel: bookViewModel)
+                    .navigationBarTitle("Ana Sayfa")
             }
-            .navigationBarTitle("Ana Sayfa")
-            .navigationBarBackButtonHidden(true)
-        //}
+            .tabItem {
+                Label("Ana Sayfa", systemImage: "house")
+            }
+
+            // Diğer sekmeleri ekleyebilirsiniz
+
+            NavigationView {
+                AddBookView(bookViewModel: bookViewModel)
+                    .navigationBarTitle("Kitap Ekle")
+            }
+            .tabItem {
+                Label("Kitap Ekle", systemImage: "book")
+            }
+
+            NavigationView {
+                ProfileView(bookViewModel: bookViewModel)
+                    .navigationBarTitle("Profil")
+            }
+            .tabItem {
+                Label("Profil", systemImage: "person")
+            }
+
+            NavigationView {
+                BorrowedBooksView(bookViewModel: bookViewModel)
+                    .navigationBarTitle("Ödünç Al/Kirala")
+            }
+            .tabItem {
+                Label("Ödünç Al", systemImage: "person.2.square.stack")
+            }
+        }
     }
 }
+
+struct HomeView_Previews: PreviewProvider {
+    static var previews: some View {
+        HomeView(bookViewModel: BookViewModel())
+    }
+}
+
+
+
 
