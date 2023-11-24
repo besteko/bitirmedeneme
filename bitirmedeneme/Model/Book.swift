@@ -62,8 +62,8 @@ struct Book: Identifiable, Codable {
         self.id = id
         self.title = title
         self.author = author
-        self.genre = genre
-        self.userId = (userId)!
+        self.genre = genre ?? ""
+        self.userId = userId ?? ""
         self.imageUrl = imageUrl
         self.isBorrowed = isBorrowed
         self.imageDataString = imageDataString

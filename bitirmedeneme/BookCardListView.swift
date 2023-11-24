@@ -33,10 +33,11 @@ struct Card: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(book.title)
                     .font(.headline)
+                    .foregroundColor(.primary)
                 Text(book.author)
                     .font(.subheadline)
+                    .foregroundColor(.secondary)
             }
-            .foregroundColor(.primary)
 
             Spacer()
         }
@@ -48,7 +49,7 @@ struct Card: View {
 }
 
 struct BookCardListView: View {
-    @ObservedObject var bookViewModel: BookViewModel
+    @StateObject var bookViewModel: BookViewModel = BookViewModel()
 
     var body: some View {
         ScrollView {

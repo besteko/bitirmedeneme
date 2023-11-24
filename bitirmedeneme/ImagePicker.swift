@@ -77,10 +77,15 @@ struct ImagePicker: UIViewControllerRepresentable {
                                 print("Dosya URL'si: \(downloadURL)")
 
                                 // Kitap bilgilerini Firebase Realtime Database'e ekleyin
-                                if let userUID = user.uid? {
-                                    let book = Book(title: "Sample Book", author: "Sample Author", genre: "Sample Genre", imageUrl: downloadURL.absoluteString, isBorrowed: false)
-                                    uploadBookData(book: book, userID: userUID)
-                                }
+                        if  userUID == user.uid  {
+                            let book = Book(title: "Sample Book", author: "Sample Author", genre: "Sample Genre", imageUrl: downloadURL.absoluteString, isBorrowed: false,imageDataString: "SampleImageDataString")
+                            uploadBookData(book: book, userID: userUID)
+                        } else {
+                            // Kullanıcı UID bulunamadı durumunda bir şey yapma veya hata işleme
+                            print("Kullanıcı UID bulunamadı.")
+                        }
+
+
                             }
                 }
             }
@@ -103,21 +108,31 @@ struct ImagePickerExample: View {
 
     var body: some View {
         VStack {
+            Button(action: {
+                // Resim seçiciyi aç
+                isPickerPresented.toggle()
+            }) {
+                HStack {
+                    Image(systemName: "photo")
+                    Text("Kitap Fotoğrafı Seç")
+                }
+            }
+            .sheet(isPresented: $isPickerPresented) {
+                ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isPickerPresented)
+            }
+
+            // Seçilen resmi göster
             if let selectedImage = selectedImage {
                 Image(uiImage: selectedImage)
                     .resizable()
                     .scaledToFit()
                     .frame(height: 150)
             }
-
-            Button("Resim Seç") {
-                isPickerPresented.toggle()
-            }
-            .imagePicker(isPresented: $isPickerPresented, image: $selectedImage)
         }
         .padding()
     }
 }
+
 
 struct ImagePickerModifier: ViewModifier {
     @Binding var isPresented: Bool

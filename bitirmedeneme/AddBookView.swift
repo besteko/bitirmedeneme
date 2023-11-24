@@ -9,9 +9,17 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import FirebaseStorage
 
 struct AddBookView: View {
-    @ObservedObject var bookViewModel: BookViewModel
+    
+    @StateObject var bookViewModel: BookViewModel
+
+        init(bookViewModel: BookViewModel) {
+            _bookViewModel = StateObject(wrappedValue: bookViewModel)
+        }
+    
+    
     @State private var title = ""
     @State private var author = ""
     @State private var genre = ""
@@ -19,7 +27,7 @@ struct AddBookView: View {
     @State private var isImagePickerPresented = false
     @State private var showAlert = false
     @State private var alertMessage = ""
-    
+
     var body: some View {
         NavigationView {
             Form {
@@ -28,7 +36,7 @@ struct AddBookView: View {
                     TextField("Yazar", text: $author)
                     TextField("Tür", text: $genre)
                 }
-                
+
                 Section {
                     Button(action: {
                         // Resim seçiciyi aç
@@ -42,7 +50,7 @@ struct AddBookView: View {
                     .sheet(isPresented: $isImagePickerPresented) {
                         ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented)
                     }
-                    
+
                     // Seçilen resmi göster
                     if let selectedImage = selectedImage {
                         Image(uiImage: selectedImage)
@@ -51,7 +59,7 @@ struct AddBookView: View {
                             .frame(height: 150)
                     }
                 }
-                
+
                 Section {
                     Button("Kitabı Ekle") {
                         addBook()
@@ -64,25 +72,33 @@ struct AddBookView: View {
             .navigationTitle("Kitap Ekle")
         }
     }
-    
     private func addBook() {
         guard let currentUser = Auth.auth().currentUser else {
-            print("Kullanıcı oturumu açmamış.")
+            showAlert(message: "Kullanıcı oturumu açmamış.")
             return
         }
-        
+
+        // Kullanıcının ID'sini al
+        let userID = currentUser.uid
+
+        // Fotoğraf URL'sini oluştur
+        let imagePath = "images/\(userID)/\(UUID().uuidString).jpg"
+        let imageUrl = "gs://bitirmedeneme-43e59.appspot.com/\(imagePath)"
+
         var newBook = Book(
             title: title,
             author: author,
             genre: genre,
-            userId: currentUser.uid, // Kullanıcının UID'si
-            imageUrl: nil,
+            userId: userID,
+            imageUrl: imageUrl,
             isBorrowed: false
         )
-        
+
+        // Firebase Storage'a fotoğrafı yükle
+
         // Firebase veritabanına ekle
         let ref = Database.database().reference().child("books").childByAutoId()
-        
+
         // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
         ref.setValue(newBook.dictionary) { (error, _) in
             if let error = error {
@@ -92,7 +108,7 @@ struct AddBookView: View {
                 // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
                 let bookID = ref.key
                 newBook.id = bookID
-                
+
                 // Kitabı ViewModel üzerinden ekleyin
                 bookViewModel.addBook(book: newBook) { (error) in
                     if let error = error {
@@ -107,6 +123,9 @@ struct AddBookView: View {
             }
         }
     }
+
+
+
     private func resetForm() {
         // Formdaki değerleri sıfırla
         title = ""
@@ -114,14 +133,14 @@ struct AddBookView: View {
         genre = ""
         selectedImage = nil
     }
-    
+
     // showAlert fonksiyonunu tanımla
     private func showAlert(message: String) {
         alertMessage = message
         showAlert = true
     }
-    
 }
+
 
 
 

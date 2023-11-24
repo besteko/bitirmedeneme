@@ -6,45 +6,65 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseAuth
+import FirebaseDatabase
 
 struct BorrowedBooksView: View {
     @ObservedObject var bookViewModel: BookViewModel
 
+    // Assuming BorrowedBooksView expects a BookViewModel instance
     init(bookViewModel: BookViewModel) {
         self.bookViewModel = bookViewModel
     }
 
+    @State private var borrowedBooks: [Book] = []
+
     var body: some View {
         VStack {
-            Text("Ödünç Alınan Kitaplar")
-                .font(.title)
-                .padding()
-
-            List(bookViewModel.books.filter { $0.isBorrowed }) { borrowedBook in
-                NavigationLink(destination: BookDetailView(book: borrowedBook, bookViewModel: bookViewModel)) {
-                    BookRowView(book: borrowedBook) {
-                        // Ödünç alınan kitapları geri verme işlemi burada yapılabilir
-                        returnBook(borrowedBook)
-                    }
+            List(borrowedBooks) { book in
+                VStack(alignment: .leading) {
+                    Text(book.title)
+                        .font(.headline)
+                    Text(book.author)
+                        .font(.subheadline)
+                    // Diğer kitap bilgilerini ekleyebilirsiniz
                 }
             }
-            .listStyle(PlainListStyle())
+            .onAppear {
+                fetchBorrowedBooks()
+            }
         }
     }
 
-    private func returnBook(_ book: Book) {
-        // Ödünç alınan kitabı geri verme işlemleri burada yapılabilir
-        // Örneğin: bookViewModel.returnBook(book: book) { error in
-        //    if error == nil {
-        //        // Kitap başarıyla geri verildi
-        //    }
-        // }
+    func fetchBorrowedBooks() {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            return
+        }
+
+        let dbRef = Database.database().reference().child("users").child(userId).child("books")
+
+        dbRef.queryOrdered(byChild: "isBorrowed").queryEqual(toValue: true).observe(.value) { snapshot in
+            var books: [Book] = []
+
+            for child in snapshot.children {
+                if let snapshot = child as? DataSnapshot,
+                   let data = snapshot.value as? [String: Any],
+                   let bookData = try? JSONSerialization.data(withJSONObject: data),
+                   let decodedBook = try? JSONDecoder().decode(Book.self, from: bookData) {
+                    books.append(decodedBook)
+                }
+            }
+
+            borrowedBooks = books
+        }
     }
 }
 
 struct BorrowedBooksView_Previews: PreviewProvider {
     static var previews: some View {
-        BorrowedBooksView(bookViewModel: BookViewModel())
+        BorrowedBooksView(bookViewModel: BookViewModel()) // BookViewModel örneği ekleyin
     }
 }
+
 

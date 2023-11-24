@@ -17,12 +17,18 @@ struct BookRowView: View {
             if let imageDataString = book.imageDataString,
                let imageData = Data(base64Encoded: imageDataString),
                let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
+
+                // UIKit'ten SwiftUI'ye dönüşüm
+                let swiftUIImage = Image(uiImage: uiImage)
+
+                // Oluşturulan SwiftUI Image'i kullanın
+                swiftUIImage
                     .resizable()
                     .scaledToFit()
                     .frame(width: 50, height: 50)
                     .cornerRadius(5)
             } else {
+                // Eğer imageDataString boş veya hatalı ise, varsayılan sistem kitap ikonunu kullanın
                 Image(systemName: "book")
                     .resizable()
                     .scaledToFit()

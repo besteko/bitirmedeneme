@@ -17,7 +17,7 @@ struct BookData: Codable {
     init(book: Book) {
         self.title = book.title
         self.author = book.author
-        self.genre = book.genre
+        self.genre = book.genre ?? "Default Genre"
         self.isBorrowed = book.isBorrowed
         self.imageDataString = book.imageDataString
     }

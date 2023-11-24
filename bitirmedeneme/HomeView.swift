@@ -8,19 +8,17 @@
 import SwiftUI
 
 struct HomeView: View {
-    var bookViewModel = BookViewModel()
+    @StateObject var bookViewModel = BookViewModel()
 
     var body: some View {
         TabView {
             NavigationView {
-                BookCardListView(bookViewModel: bookViewModel)
+                BookCardListView()
                     .navigationBarTitle("Ana Sayfa")
             }
             .tabItem {
                 Label("Ana Sayfa", systemImage: "house")
             }
-
-            // Diğer sekmeleri ekleyebilirsiniz
 
             NavigationView {
                 AddBookView(bookViewModel: bookViewModel)
@@ -46,12 +44,14 @@ struct HomeView: View {
                 Label("Ödünç Al", systemImage: "person.2.square.stack")
             }
         }
+        .environmentObject(bookViewModel)
     }
 }
 
+
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView(bookViewModel: BookViewModel())
+        HomeView()
     }
 }
 

@@ -38,7 +38,7 @@ struct LoginView: View {
 
                 NavigationLink(destination: HomeView(bookViewModel: BookViewModel()), isActive: $isLoggedIn) {
                     EmptyView()
-                }
+                }.navigationBarBackButtonHidden(true)
 
                 Button(action: {
                     login()
