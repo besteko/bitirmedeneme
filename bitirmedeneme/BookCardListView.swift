@@ -6,63 +6,98 @@
 //
 
 import SwiftUI
+import FirebaseStorage
 
 struct Card: View {
     var book: Book
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack {
             if let imageDataString = book.imageDataString,
                let imageData = Data(base64Encoded: imageDataString),
                let uiImage = UIImage(data: imageData) {
                 Image(uiImage: uiImage)
                     .resizable()
                     .scaledToFill()
-                    .frame(height: 150)
-                    .clipped()
-                    .cornerRadius(10)
+                    .frame(height: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
             } else {
                 Image(systemName: "book")
                     .resizable()
-                    .scaledToFill()
-                    .frame(height: 150)
-                    .clipped()
-                    .cornerRadius(10)
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(Color.gray, lineWidth: 1)
+                    )
             }
 
-            VStack(alignment: .leading, spacing: 4) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(book.title)
-                    .font(.headline)
+                    .font(.title)
+                    .fontWeight(.bold)
                     .foregroundColor(.primary)
-                Text(book.author)
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-            }
 
-            Spacer()
+                Text(book.author)
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+
+                Spacer()
+            }
+            .padding()
         }
-        .padding()
         .background(Color.white)
-        .cornerRadius(10)
+        .cornerRadius(20)
         .shadow(radius: 5)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 8)
     }
 }
-
 struct BookCardListView: View {
-    @StateObject var bookViewModel: BookViewModel = BookViewModel()
+    @ObservedObject var bookViewModel: BookViewModel
+    @Binding var searchText: String
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 16) {
-                ForEach(bookViewModel.books) { book in
-                    NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
-                        Card(book: book)
+        VStack {
+            SearchBar(searchText: $searchText)
+
+            ScrollView {
+                LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 16)], spacing: 16) {
+                    ForEach(filteredBooks) { book in
+                        NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
+                            Card(book: book)
+                                .aspectRatio(2/3, contentMode: .fit) // Düzeltilen kısım
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .buttonStyle(PlainButtonStyle()) // NavigationLink için düzgün bir düğme stili
                 }
                 .padding()
             }
+            .navigationBarTitle("Kitaplar")
         }
-        .navigationBarTitle("Kitaplar")
+    }
+
+    private var filteredBooks: [Book] {
+        if searchText.isEmpty {
+            return bookViewModel.books
+        } else {
+            return bookViewModel.books.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText) ||
+                $0.author.localizedCaseInsensitiveContains(searchText)
+                // Diğer arama kriterlerini ekleyebilirsiniz
+            }
+        }
     }
 }
+
+
+
+
+
+
+

@@ -110,7 +110,7 @@ struct AddBookView: View {
                 newBook.id = bookID
 
                 // Kitabı ViewModel üzerinden ekleyin
-                bookViewModel.addBook(book: newBook) { (error) in
+                bookViewModel.addBook(book: newBook, image: selectedImage!) { (error) in
                     if let error = error {
                         print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
                         showAlert(message: "Kitap eklenirken bir hata oluştu.")

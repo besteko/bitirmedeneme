@@ -5,19 +5,21 @@
 //  Created by Beste Kocaoglu on 18.11.2023.
 //
 
+// FilteredBooksView.swift
+
 import SwiftUI
 
 struct FilteredBooksView: View {
     @ObservedObject var bookViewModel: BookViewModel
     var selectedGenre: String
 
-    @State private var searchText = "" // Added state for searchText
+    @State private var searchText = ""
 
     var body: some View {
         VStack {
-            SearchBar(searchText: $searchText, placeholder: "Kitap Ara") // Using local searchText
+            SearchBar(searchText: $searchText)
 
-            List(filteredBooks) { book in // Changed to use filteredBooks instead of bookViewModel.filteredBooks
+            List(filteredBooks) { book in
                 NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
                     BookRowView(book: book) {
                         removeBook(book)
@@ -31,15 +33,13 @@ struct FilteredBooksView: View {
 
     private func removeBook(_ book: Book) {
         bookViewModel.removeBook(bookID: book.id ?? "") { error in
-            // Kitap kaldırıldıktan sonra yapılacak işlemler
             if error == nil {
-                // Kitap başarıyla kaldırıldı, belki başka bir şey yapabilirsiniz
+                // Kitap başarıyla kaldırıldı
             }
         }
     }
 
     var filteredBooks: [Book] {
-        // Filter the books based on genre and search text
         let genreFilteredBooks = bookViewModel.books.filter { $0.genre == selectedGenre }
         if searchText.isEmpty {
             return genreFilteredBooks
@@ -48,6 +48,7 @@ struct FilteredBooksView: View {
         }
     }
 }
+
 
 
 
