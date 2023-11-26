@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct BookDetailView: View {
     var book: Book
@@ -13,11 +14,12 @@ struct BookDetailView: View {
 
     var body: some View {
         VStack {
-            if let imageDataString = book.imageDataString,
-               let imageData = Data(base64Encoded: imageDataString),
-               let uiImage = UIImage(data: imageData) {
-                Image(uiImage: uiImage)
+            if let imageUrl = book.imageUrl, imageUrl != "" {
+                WebImage(url: URL(string: imageUrl) )
                     .resizable()
+                    .placeholder(Image("book"))
+                    .indicator(.activity) // Activity Indicator
+                    .transition(.fade(duration: 0.5)) // Fade Transition with duration
                     .scaledToFit()
                     .frame(height: 150)
                     .clipShape(RoundedRectangle(cornerRadius: 10))

@@ -8,6 +8,7 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
+import FirebaseStorage
 
 class BookViewModel: ObservableObject {
     @Published var books: [Book] = []
@@ -50,17 +51,20 @@ class BookViewModel: ObservableObject {
     }
 
     func addBook(book: Book, completion: @escaping (Error?) -> Void) {
-        guard let userId = Auth.auth().currentUser?.uid else {
+        guard let userId = Auth.auth().currentUser?.uid, let dbRef = self.dbRef  else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
             completion(error)
             return
         }
 
+        let bookRef = dbRef.childByAutoId()
         var updatedBook = book
+        let bookID = bookRef.key
         updatedBook.userId = userId
+        updatedBook.id = bookID
+        
 
-        let bookRef = dbRef?.childByAutoId()
-        bookRef?.setValue(updatedBook.dictionary) { (error, _) in
+        bookRef.setValue(updatedBook.dictionary) { (error, _) in
             completion(error)
         }
     }
@@ -98,6 +102,41 @@ class BookViewModel: ObservableObject {
         let bookRef = dbRef?.child(book.id ?? "")
         bookRef?.setValue(books[updatedBookIndex].dictionary) { (error, _) in
             completion(error)
+        }
+    }
+    
+    func uploadImage(_ image: UIImage, completionHandler: ((String) -> ())? ) {
+        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
+            print("Resim verisi oluşturulamadı.")
+            return
+        }
+
+        let storage = Storage.storage()
+        let storageRef = storage.reference()
+
+        if let user = Auth.auth().currentUser {
+            let userUID = user.uid
+            let imageRef = storageRef.child("images/\(userUID)/\(UUID().uuidString).jpg")
+
+            let metadata = StorageMetadata()
+            metadata.contentType = "image/jpeg"
+
+            let _ = imageRef.putData(imageData, metadata: metadata) { (metadata, error) in
+                if let error = error {
+                    print("Yükleme hatası: \(error.localizedDescription)")
+                } else {
+                    imageRef.downloadURL { (url, error) in
+                        guard let downloadURL = url else {
+                            if let error = error {
+                                print("URL alınamadı: \(error.localizedDescription)")
+                            }
+                            return
+                        }
+                        print("Dosya URL'si: \(downloadURL)")
+                        completionHandler?(downloadURL.absoluteString)
+                    }
+                }
+            }
         }
     }
 }

@@ -49,7 +49,9 @@ struct AddBookView: View {
                         }
                     }
                     .sheet(isPresented: $isImagePickerPresented) {
-                        ImagePicker(selectedImage: $selectedImage, selectedImageUrl: $selectedImageUrl, isPickerPresented: $isImagePickerPresented)
+                        ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented) { selectedImageUrl in
+                            self.selectedImageUrl = selectedImageUrl
+                        }
                     }
 
                     // Seçilen resmi göster
@@ -74,17 +76,14 @@ struct AddBookView: View {
         }
     }
     private func addBook() {
-        guard let currentUser = Auth.auth().currentUser, let selectedImageUrl = selectedImageUrl else {
+        guard let currentUser = Auth.auth().currentUser else {
             showAlert(message: "Kullanıcı oturumu açmamış.")
             return
         }
-
+        
+        
         // Kullanıcının ID'sini al
         let userID = currentUser.uid
-
-        // Fotoğraf URL'sini oluştur
-//        let imagePath = "images/\(userID)/\(UUID().uuidString).jpg"
-//        let imageUrl = "gs://bitirmedeneme-43e59.appspot.com/\(imagePath)"
 
         var newBook = Book(
             title: title,
@@ -94,39 +93,60 @@ struct AddBookView: View {
             imageUrl: selectedImageUrl,
             isBorrowed: false
         )
+        
+        if let selectedImage = selectedImage {
+            bookViewModel.uploadImage(selectedImage) { imageUrl in
+                newBook.imageUrl = imageUrl
+                self.addBook(newBook: newBook)
+            }
+        } else {
+            self.addBook(newBook: newBook)
+        }
 
         // Firebase Storage'a fotoğrafı yükle
 
         // Firebase veritabanına ekle
-        let ref = Database.database().reference().child("books").childByAutoId()
+//        let ref = Database.database().reference().child("books").childByAutoId()
 
         // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
-        ref.setValue(newBook.dictionary) { (error, _) in
-            if let error = error {
-                print("Hata oluştu: \(error.localizedDescription)")
-                showAlert(message: "Kitap eklenirken bir hata oluştu.")
-            } else {
-                // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
-                let bookID = ref.key
-                newBook.id = bookID
+//        ref.setValue(newBook.dictionary) { (error, _) in
+//            if let error = error {
+//                print("Hata oluştu: \(error.localizedDescription)")
+//                showAlert(message: "Kitap eklenirken bir hata oluştu.")
+//            } else {
+//                // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
+//                let bookID = ref.key
+//                newBook.id = bookID
 
                 // Kitabı ViewModel üzerinden ekleyin
-                bookViewModel.addBook(book: newBook) { (error) in
-                    if let error = error {
-                        print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
-                        showAlert(message: "Kitap eklenirken bir hata oluştu.")
-                    } else {
-                        // Kitap başarıyla ViewModel'a eklendi
-                        showAlert(message: "Kitap başarıyla eklendi.")
-                        resetForm() // Formu sıfırla
-                    }
-                }
+//                bookViewModel.addBook(book: newBook) { (error) in
+//                    if let error = error {
+//                        print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
+//                        showAlert(message: "Kitap eklenirken bir hata oluştu.")
+//                    } else {
+//                        // Kitap başarıyla ViewModel'a eklendi
+//                        showAlert(message: "Kitap başarıyla eklendi.")
+//                        resetForm() // Formu sıfırla
+//                    }
+//                }
+                
+//            }
+//        }
+    }
+
+    private func addBook (newBook: Book) {
+        bookViewModel.addBook(book: newBook) { (error) in
+            if let error = error {
+                print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
+                showAlert(message: "Kitap eklenirken bir hata oluştu.")
+            } else {
+                // Kitap başarıyla ViewModel'a eklendi
+                showAlert(message: "Kitap başarıyla eklendi.")
+                resetForm() // Formu sıfırla
             }
         }
     }
-
-
-
+    
     private func resetForm() {
         // Formdaki değerleri sıfırla
         title = ""
