@@ -81,48 +81,74 @@ struct AddBookView: View {
         // Kullanıcının ID'sini al
         let userID = currentUser.uid
 
-        // Fotoğraf URL'sini oluştur
-        let imagePath = "images/\(userID)/\(UUID().uuidString).jpg"
-        let imageUrl = "gs://bitirmedeneme-43e59.appspot.com/\(imagePath)"
+        // Fotoğrafı Firebase Storage'a yükle
+        guard let imageData = selectedImage?.jpegData(compressionQuality: 0.5) else {
+            showAlert(message: "Resim verisi oluşturulamadı.")
+            return
+        }
 
-        var newBook = Book(
-            title: title,
-            author: author,
-            genre: genre,
-            userId: userID,
-            imageUrl: imageUrl,
-            isBorrowed: false
-        )
-
-        // Firebase Storage'a fotoğrafı yükle
-
-        // Firebase veritabanına ekle
-        let ref = Database.database().reference().child("books").childByAutoId()
-
-        // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
-        ref.setValue(newBook.dictionary) { (error, _) in
-            if let error = error {
-                print("Hata oluştu: \(error.localizedDescription)")
+        let storageRef = Storage.storage().reference().child("images/\(userID)/\(UUID().uuidString).jpg")
+        storageRef.putData(imageData, metadata: nil) { (metadata, error) in
+            guard error == nil else {
+                print("Resim yüklenirken hata oluştu: \(error!.localizedDescription)")
                 showAlert(message: "Kitap eklenirken bir hata oluştu.")
-            } else {
-                // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
-                let bookID = ref.key
-                newBook.id = bookID
+                return
+            }
 
-                // Kitabı ViewModel üzerinden ekleyin
-                bookViewModel.addBook(book: newBook, image: selectedImage!) { (error) in
+            // Resmin yüklendiği URL'yi al
+            storageRef.downloadURL { (url, error) in
+                guard let imageURL = url, error == nil else {
+                    print("Resim URL'si alınamadı: \(error!.localizedDescription)")
+                    showAlert(message: "Kitap eklenirken bir hata oluştu.")
+                    return
+                }
+
+                // Kitap verilerini hazırla
+                var newBook = Book(
+                    title: title,
+                    author: author,
+                    genre: genre,
+                    userId: userID,
+                    imageUrl: imageURL.absoluteString,
+                    isBorrowed: false
+                )
+
+                // Firebase veritabanına ekle
+                let ref = Database.database().reference().child("books").childByAutoId()
+
+                // Veritabanına eklendikten sonra ID'yi al ve kitap nesnesine ekle
+                ref.setValue(newBook.dictionary) { (error, _) in
                     if let error = error {
-                        print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
+                        print("Hata oluştu: \(error.localizedDescription)")
                         showAlert(message: "Kitap eklenirken bir hata oluştu.")
                     } else {
-                        // Kitap başarıyla ViewModel'a eklendi
-                        showAlert(message: "Kitap başarıyla eklendi.")
-                        resetForm() // Formu sıfırla
+                        let bookID = ref.key
+                        newBook.id = bookID
+
+                        if let selectedImage = selectedImage {
+                            // selectedImage değeri nil değilse, fonksiyonu çağırabilirsiniz.
+                            bookViewModel.addBook(book: newBook, image: selectedImage) { (error) in
+                                if let error = error {
+                                    print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
+                                    showAlert(message: "Kitap eklenirken bir hata oluştu.")
+                                } else {
+                                    // Kitap başarıyla ViewModel'a eklendi
+                                    showAlert(message: "Kitap başarıyla eklendi.")
+                                    resetForm() // Formu sıfırla
+                                }
+                            }
+                        } else {
+                            // selectedImage nil ise, bir hata mesajı gösterebilir veya başka bir şey yapabilirsiniz.
+                            print("Hata: Seçilen resim nil.")
+                            showAlert(message: "Lütfen bir resim seçin.")
+                        }
+
                     }
                 }
             }
         }
     }
+
 
 
 
