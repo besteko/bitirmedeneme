@@ -13,8 +13,8 @@ import FirebaseDatabase
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
-    @Binding var selectedImageUrl: String?
     @Binding var isPickerPresented: Bool
+    var selectedImageUrl: ( (String)-> ())
 
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let parent: ImagePicker
@@ -26,9 +26,6 @@ struct ImagePicker: UIViewControllerRepresentable {
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             if let uiImage = info[.originalImage] as? UIImage {
                 parent.selectedImage = uiImage
-                parent.uploadImage(uiImage) { imageUrl in
-                    self.parent.selectedImageUrl = imageUrl
-                }
             }
             parent.isPickerPresented = false
         }
@@ -123,7 +120,9 @@ struct ImagePickerExample: View {
                 }
             }
             .sheet(isPresented: $isPickerPresented) {
-                ImagePicker(selectedImage: $selectedImage, selectedImageUrl: $selectedImageUrl, isPickerPresented: $isPickerPresented)
+                ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isPickerPresented) { _ in
+                    
+                }
             }
 
             // Seçilen resmi göster
@@ -142,19 +141,20 @@ struct ImagePickerExample: View {
 struct ImagePickerModifier: ViewModifier {
     @Binding var isPresented: Bool
     @Binding var image: UIImage?
-    @Binding var imageUrl: String?
 
     func body(content: Content) -> some View {
         content
             .sheet(isPresented: $isPresented) {
-                ImagePicker(selectedImage: $image, selectedImageUrl: $imageUrl, isPickerPresented: $isPresented)
+                ImagePicker(selectedImage: $image, isPickerPresented: $isPresented) { _ in
+                    
+                }
             }
     }
 }
 
 extension View {
-    func imagePicker(isPresented: Binding<Bool>, image: Binding<UIImage?>, imageUrl: Binding<String?>) -> some View {
-        self.modifier(ImagePickerModifier(isPresented: isPresented, image: image, imageUrl: imageUrl))
+    func imagePicker(isPresented: Binding<Bool>, image: Binding<UIImage?>) -> some View {
+        self.modifier(ImagePickerModifier(isPresented: isPresented, image: image))
     }
 }
 

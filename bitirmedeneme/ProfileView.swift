@@ -23,7 +23,7 @@ struct ProfileView: View {
                 // Kullanıcının eklediği kitapları göster
                 List(bookViewModel.books.filter { $0.userId == user.uid }) { book in
                     NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
-                       // BookRowView(book: book)
+                        BookRowView(book: book, removeBookAction: {})
                     }
                 }
                 .listStyle(PlainListStyle())
