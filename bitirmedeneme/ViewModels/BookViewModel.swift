@@ -8,7 +8,6 @@ import SwiftUI
 import Firebase
 import FirebaseAuth
 import FirebaseDatabase
-import FirebaseStorage
 
 class BookViewModel: ObservableObject {
     @Published var books: [Book] = []
@@ -50,49 +49,21 @@ class BookViewModel: ObservableObject {
         })
     }
 
-    func addBook(book: Book, image: UIImage, completion: @escaping (Error?) -> Void) {
+    func addBook(book: Book, completion: @escaping (Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
             completion(error)
             return
         }
 
-        // Resmi Data formatına çevir
-        guard let imageData = image.jpegData(compressionQuality: 0.5) else {
-            let error = NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Resim verisi oluşturulamadı."])
+        var updatedBook = book
+        updatedBook.userId = userId
+
+        let bookRef = dbRef?.childByAutoId()
+        bookRef?.setValue(updatedBook.dictionary) { (error, _) in
             completion(error)
-            return
-        }
-
-        // Resmi Firebase Storage'a yükle
-        let storageRef = Storage.storage().reference().child("book_images/\(UUID().uuidString).jpg")
-        storageRef.putData(imageData, metadata: nil) { (_, error) in
-            guard error == nil else {
-                completion(error)
-                return
-            }
-
-            // Resmin yüklendiği URL'yi al
-            storageRef.downloadURL { (url, error) in
-                guard let imageURL = url, error == nil else {
-                    completion(error)
-                    return
-                }
-
-                // Kitap verilerini hazırla
-                var updatedBook = book
-                updatedBook.userId = userId
-                updatedBook.imageUrl = imageURL.absoluteString
-
-                // Kitabı Firebase Realtime Database'e ekle
-                let bookRef = self.dbRef?.childByAutoId()
-                bookRef?.setValue(updatedBook.dictionary) { (error, _) in
-                    completion(error)
-                }
-            }
         }
     }
-
 
     func removeBook(bookID: String, completion: @escaping (Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
@@ -129,12 +100,6 @@ class BookViewModel: ObservableObject {
             completion(error)
         }
     }
-    
-    func borrowBook(book: Book, completion: @escaping (Error?) -> Void) {
-        // Burada kitabın ödünç alınanlar listesine eklenmesi ve isBorrowed özelliğinin güncellenmesi gerekiyor
-        // Bu işlemleri gerçekleştirin ve completion ile sonucu döndürün
-    }
-
 }
 
 

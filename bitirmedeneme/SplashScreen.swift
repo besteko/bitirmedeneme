@@ -72,17 +72,11 @@ struct SplashScreen: View {
                     }
                                     
                                     NavigationLink(destination: RegisterView()) {
-                                        HStack{
-                                            Text("Hesabınız yok mu?")
-                                                .foregroundColor(.brown)
-                                            Text("Kaydol")
-                                                .padding(.vertical, 40)
-                                                .foregroundColor(.brown)
-                                                .underline()
-                                                .navigationBarBackButtonHidden(true)
-                                            
-                                        }
-                                        
+                                        Text("Hesabınız yok mu? Kaydol")
+                                            .padding(.vertical, 40)
+                                            .foregroundColor(.brown)
+                                            .underline()
+                                            .navigationBarBackButtonHidden(true)
                                             
                                     }
                     

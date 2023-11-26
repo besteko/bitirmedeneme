@@ -19,7 +19,7 @@ struct BookData: Codable {
         self.author = book.author
         self.genre = book.genre ?? "Default Genre"
         self.isBorrowed = book.isBorrowed
-        self.imageDataString = book.imageDataString
+        self.imageDataString = book.imageUrl
     }
 
     var dictionaryRepresentation: [String: Any] {
@@ -28,7 +28,7 @@ struct BookData: Codable {
             "author": author,
             "genre": genre,
             "isBorrowed": isBorrowed,
-            "imageDataString": imageDataString ?? ""
+            "imageUrl": imageDataString ?? ""
         ]
     }
 }
