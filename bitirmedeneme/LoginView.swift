@@ -18,9 +18,7 @@ struct LoginView: View {
 
     var body: some View {
        // NavigationView {
-        
             VStack {
-                
                 TextField("Email", text: $email)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()

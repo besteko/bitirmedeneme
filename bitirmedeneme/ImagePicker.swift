@@ -13,6 +13,7 @@ import FirebaseDatabase
 
 struct ImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
+    @Binding var selectedImageUrl: String?
     @Binding var isPickerPresented: Bool
 
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
@@ -25,7 +26,9 @@ struct ImagePicker: UIViewControllerRepresentable {
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             if let uiImage = info[.originalImage] as? UIImage {
                 parent.selectedImage = uiImage
-                parent.uploadImage(uiImage)
+                parent.uploadImage(uiImage) { imageUrl in
+                    self.parent.selectedImageUrl = imageUrl
+                }
             }
             parent.isPickerPresented = false
         }
@@ -47,7 +50,7 @@ struct ImagePicker: UIViewControllerRepresentable {
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {}
 
-    func uploadImage(_ image: UIImage) {
+    func uploadImage(_ image: UIImage, completionHandler: ((String) -> ())? ) {
         guard let imageData = image.jpegData(compressionQuality: 0.5) else {
             print("Resim verisi oluşturulamadı.")
             return
@@ -68,15 +71,15 @@ struct ImagePicker: UIViewControllerRepresentable {
                     print("Yükleme hatası: \(error.localizedDescription)")
                 } else {
                     imageRef.downloadURL { (url, error) in
-                                guard let downloadURL = url else {
-                                    if let error = error {
-                                        print("URL alınamadı: \(error.localizedDescription)")
-                                    }
-                                    return
-                                }
-                                print("Dosya URL'si: \(downloadURL)")
-
-                                // Kitap bilgilerini Firebase Realtime Database'e ekleyin
+                        guard let downloadURL = url else {
+                            if let error = error {
+                                print("URL alınamadı: \(error.localizedDescription)")
+                            }
+                            return
+                        }
+                        print("Dosya URL'si: \(downloadURL)")
+                        completionHandler?(downloadURL.absoluteString)
+                        // Kitap bilgilerini Firebase Realtime Database'e ekleyin
                         if  userUID == user.uid  {
                             let book = Book(title: "Sample Book", author: "Sample Author", genre: "Sample Genre", imageUrl: downloadURL.absoluteString, isBorrowed: false,imageDataString: "SampleImageDataString")
                             uploadBookData(book: book, userID: userUID)
@@ -84,9 +87,9 @@ struct ImagePicker: UIViewControllerRepresentable {
                             // Kullanıcı UID bulunamadı durumunda bir şey yapma veya hata işleme
                             print("Kullanıcı UID bulunamadı.")
                         }
-
-
-                            }
+                        
+                        
+                    }
                 }
             }
         }
@@ -97,13 +100,15 @@ struct ImagePicker: UIViewControllerRepresentable {
         let newBookRef = ref.childByAutoId()
 
         let bookData = BookData(book: book)
-
+        let dictionaryRepresentation = bookData.dictionaryRepresentation
+        
         newBookRef.setValue(bookData.dictionaryRepresentation)
     }
 }
 
 struct ImagePickerExample: View {
     @State private var selectedImage: UIImage?
+    @State private var selectedImageUrl: String?
     @State private var isPickerPresented = false
 
     var body: some View {
@@ -118,7 +123,7 @@ struct ImagePickerExample: View {
                 }
             }
             .sheet(isPresented: $isPickerPresented) {
-                ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isPickerPresented)
+                ImagePicker(selectedImage: $selectedImage, selectedImageUrl: $selectedImageUrl, isPickerPresented: $isPickerPresented)
             }
 
             // Seçilen resmi göster
@@ -137,18 +142,19 @@ struct ImagePickerExample: View {
 struct ImagePickerModifier: ViewModifier {
     @Binding var isPresented: Bool
     @Binding var image: UIImage?
+    @Binding var imageUrl: String?
 
     func body(content: Content) -> some View {
         content
             .sheet(isPresented: $isPresented) {
-                ImagePicker(selectedImage: $image, isPickerPresented: $isPresented)
+                ImagePicker(selectedImage: $image, selectedImageUrl: $imageUrl, isPickerPresented: $isPresented)
             }
     }
 }
 
 extension View {
-    func imagePicker(isPresented: Binding<Bool>, image: Binding<UIImage?>) -> some View {
-        self.modifier(ImagePickerModifier(isPresented: isPresented, image: image))
+    func imagePicker(isPresented: Binding<Bool>, image: Binding<UIImage?>, imageUrl: Binding<String?>) -> some View {
+        self.modifier(ImagePickerModifier(isPresented: isPresented, image: image, imageUrl: imageUrl))
     }
 }
 

@@ -6,8 +6,6 @@
 //
 
 import SwiftUI
-import FirebaseAuth
-import FirebaseStorage
 
 struct BookDetailView: View {
     var book: Book
@@ -45,20 +43,8 @@ struct BookDetailView: View {
                 .bold()
                 .padding()
 
-            borrowButton()
-                .padding()
-
-            Spacer()
-        }
-        .padding()
-        .navigationTitle(book.title)
-    }
-
-    @ViewBuilder
-    private func borrowButton() -> some View {
-        if book.userId != Auth.auth().currentUser?.uid {
             Button(action: {
-                // Kitapı ödünç al veya iade etme işlemleri burada gerçekleştirilebilir.
+                // Kitabı ödünç al veya iade etme işlemleri burada gerçekleştirilebilir.
                 if book.isBorrowed {
                     // Kitap ödünç alındıysa iade et
                     bookViewModel.returnBook(book: book) { error in
@@ -72,17 +58,7 @@ struct BookDetailView: View {
                     }
                 } else {
                     // Kitap müsaitse ödünç al
-                    bookViewModel.borrowBook(book: book) { error in
-                        if let error = error {
-                            // Ödünç alma işleminde hata olursa burada işlemler yapılabilir
-                            print("Kitap ödünç alınamadı: \(error.localizedDescription)")
-                            showAlert(message: "Kitap ödünç alınamadı. \(error.localizedDescription)")
-                        } else {
-                            // Ödünç alma başarılı, belki başka bir şey yapabilirsiniz
-                            print("Kitap başarıyla ödünç alındı")
-                            showAlert(message: "Kitap başarıyla ödünç alındı.")
-                        }
-                    }
+                    // Bu kısımda ödünç alma işlemleri yapılabilir
                 }
             }) {
                 Text(book.isBorrowed ? "İade Et" : "Ödünç Al")
@@ -91,16 +67,11 @@ struct BookDetailView: View {
                     .foregroundColor(.white)
                     .cornerRadius(10)
             }
-        } else {
-            // Kitap sahibi kullanıcıysa boş bir View döndür
-            EmptyView()
-        }
-    }
 
-    private func showAlert(message: String) {
-        // Uyarı göstermek için kullanılacak fonksiyon
-        // İsterseniz daha gelişmiş bir uyarı kullanabilirsiniz
-        print("Uyarı: \(message)")
+            Spacer()
+        }
+        .padding()
+        .navigationTitle(book.title)
     }
 }
 

@@ -33,6 +33,16 @@ struct Book: Identifiable, Codable {
         }
         return nil
     }
+    
+    var testImageData: Data? {
+        if author == "Mustafa" {
+            
+        }
+        if let imageUrl = imageUrl, let imageData = Data(base64Encoded: imageUrl) {
+            return imageData
+        }
+        return nil
+    }
 
     var dictionary: [String: Any] {
         return [
