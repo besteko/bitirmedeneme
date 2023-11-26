@@ -4,37 +4,54 @@
 //
 //  Created by Beste Kocaoglu on 23.11.2023.
 //
-
 import SwiftUI
 
-// Ayrı bir TabBar view'i oluştur
 struct TabBarView: View {
     @ObservedObject var bookViewModel: BookViewModel
-
+    @Binding var searchText: String
+    
     var body: some View {
         TabView {
-            // ... Burada tab içeriğini tanımla, yukarıdaki örneği kullanabilirsin
+            // Ana Sayfa
+            NavigationView {
+                BookCardListView(bookViewModel: bookViewModel, searchText: $searchText)
+                    .navigationBarTitle("Ana Sayfa")
+            }
+            .tabItem {
+                Label("Ana Sayfa", systemImage: "house")
+            }
 
-            // Örnek bir tab
-            Text("Tab 1")
-                .tabItem {
-                    Label("Ana Sayfa", systemImage: "house")
-                }
+            // Kitap Ekle
+            NavigationView {
+                AddBookView(bookViewModel: bookViewModel)
+                    .navigationBarTitle("Kitap Ekle")
+            }
+            .tabItem {
+                Label("Kitap Ekle", systemImage: "book")
+            }
 
-            // Örnek bir tab
-            Text("Tab 2")
-                .tabItem {
-                    Label("Kitap Ekle", systemImage: "book")
-                }
+            // Profil
+            NavigationView {
+                ProfileView(bookViewModel: bookViewModel)
+                    .navigationBarTitle("Profil")
+            }
+            .tabItem {
+                Label("Profil", systemImage: "person")
+            }
+
+            // Ödünç Al
+            NavigationView {
+                BorrowedBooksView(bookViewModel: bookViewModel)
+                    .navigationBarTitle("Ödünç Al/Kirala")
+            }
+            .tabItem {
+                Label("Ödünç Al", systemImage: "person.2.square.stack")
+            }
         }
+        .environmentObject(bookViewModel)
     }
 }
 
-// TabBar view'i için önizleme
-struct TabBarView_Previews: PreviewProvider {
-    static var previews: some View {
-        TabBarView(bookViewModel: BookViewModel())
-    }
-}
+
 
 
