@@ -8,11 +8,15 @@
 import SwiftUI
 
 struct HomeView: View {
+    
+    @State private var searchText = ""
     @StateObject var bookViewModel = BookViewModel()
 
     var body: some View {
         TabView {
             NavigationView {
+                SearchBar(searchText: $searchText, placeholder: "")
+                    .padding(.bottom, 670)
                 BookCardListView()
                     .navigationBarTitle("Ana Sayfa")
             }

@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SDWebImageSwiftUI
+import FirebaseAuth
 
 struct BookDetailView: View {
     var book: Book
@@ -44,30 +45,32 @@ struct BookDetailView: View {
                 .foregroundColor(book.isBorrowed ? .red : .green)
                 .bold()
                 .padding()
-
-            Button(action: {
-                // Kitabı ödünç al veya iade etme işlemleri burada gerçekleştirilebilir.
-                if book.isBorrowed {
-                    // Kitap ödünç alındıysa iade et
-                    bookViewModel.returnBook(book: book) { error in
-                        if let error = error {
-                            // İade işleminde hata olursa burada işlemler yapılabilir
-                            print("Kitap iade edilemedi: \(error.localizedDescription)")
-                        } else {
-                            // İade başarılı, belki başka bir şey yapabilirsiniz
-                            print("Kitap başarıyla iade edildi")
+            
+            if let currentUSer = Auth.auth().currentUser, book.userId != currentUSer.uid {
+                Button(action: {
+                    // Kitabı ödünç al veya iade etme işlemleri burada gerçekleştirilebilir.
+                    if book.isBorrowed {
+                        // Kitap ödünç alındıysa iade et
+                        bookViewModel.returnBook(book: book) { error in
+                            if let error = error {
+                                // İade işleminde hata olursa burada işlemler yapılabilir
+                                print("Kitap iade edilemedi: \(error.localizedDescription)")
+                            } else {
+                                // İade başarılı, belki başka bir şey yapabilirsiniz
+                                print("Kitap başarıyla iade edildi")
+                            }
                         }
+                    } else {
+                        // Kitap müsaitse ödünç al
+                        // Bu kısımda ödünç alma işlemleri yapılabilir
                     }
-                } else {
-                    // Kitap müsaitse ödünç al
-                    // Bu kısımda ödünç alma işlemleri yapılabilir
+                }) {
+                    Text(book.isBorrowed ? "İade Et" : "Ödünç Al")
+                        .padding()
+                        .background(book.isBorrowed ? Color.red : Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
                 }
-            }) {
-                Text(book.isBorrowed ? "İade Et" : "Ödünç Al")
-                    .padding()
-                    .background(book.isBorrowed ? Color.red : Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
             }
 
             Spacer()
