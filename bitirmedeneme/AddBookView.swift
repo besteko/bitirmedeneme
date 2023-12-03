@@ -72,7 +72,7 @@ struct AddBookView: View {
             .alert(isPresented: $showAlert) {
                 Alert(title: Text("Uyarı"), message: Text(alertMessage), dismissButton: .default(Text("Tamam")))
             }
-            .navigationTitle("Kitap Ekle")
+            //.navigationTitle("Kitap Ekle")
         }
     }
     private func addBook() {

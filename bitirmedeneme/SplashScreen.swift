@@ -39,7 +39,7 @@ struct SplashScreen: View {
                         .padding(40)
                         .shadow(color: .orange, radius: 30)
 
-                    NavigationLink(destination: LoginView()) {
+                    NavigationLink(destination: LoginView().navigationBarBackButtonHidden(true)) {
                         Text("Giriş yap")
                             .frame(width: 130, height: 60)
                             .background(Color(red: 0.5, green: 0.4, blue: 0.1))
@@ -48,9 +48,9 @@ struct SplashScreen: View {
                             .padding(.vertical, 50)
                             .shadow(color: .orange, radius: 5)
                     }
-                    .navigationBarHidden(true)
+                    //.navigationBarHidden(true)
 
-                    NavigationLink(destination: RegisterView()) {
+                    NavigationLink(destination: RegisterView().navigationBarBackButtonHidden(true)) {
                         Text("Hesabınız yok mu? Kaydol")
                             .padding(.vertical, 20) // Daha düzenli bir görünüm için boyutu azalttım
                             .foregroundColor(.brown)

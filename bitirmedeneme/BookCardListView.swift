@@ -67,7 +67,8 @@ struct BookCardListView: View {
             }
             .padding(.horizontal) // Yatay iç boşluk ekleyin
         }
-        .navigationBarTitle("Kitaplar")
+        //.navigationBarTitle("Kitaplar")
     }
 }
+
 

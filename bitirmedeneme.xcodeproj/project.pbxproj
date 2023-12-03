@@ -12,7 +12,6 @@
 		9A0493582B0CED840050FDDE /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0493572B0CED840050FDDE /* ProfileView.swift */; };
 		9A04935A2B0D40250050FDDE /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0493592B0D40250050FDDE /* ImagePicker.swift */; };
 		9A40F5FE2B0E99D80042B440 /* BookData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A40F5FD2B0E99D80042B440 /* BookData.swift */; };
-		9A7995232B0F4B2500BC141D /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7995222B0F4B2500BC141D /* TabBarView.swift */; };
 		9A7995252B0F4C3800BC141D /* BookCardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7995242B0F4C3800BC141D /* BookCardListView.swift */; };
 		9A8D90A92B08DFBA00F043B7 /* bitirmedenemeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D90A82B08DFBA00F043B7 /* bitirmedenemeApp.swift */; };
 		9A8D90AB2B08DFBA00F043B7 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D90AA2B08DFBA00F043B7 /* RegisterView.swift */; };
@@ -66,7 +65,6 @@
 		9A0493592B0D40250050FDDE /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		9A40F5FD2B0E99D80042B440 /* BookData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookData.swift; sourceTree = "<group>"; };
 		9A5C156E2B10BCE2002BEC64 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		9A7995222B0F4B2500BC141D /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		9A7995242B0F4C3800BC141D /* BookCardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCardListView.swift; sourceTree = "<group>"; };
 		9A8D90A52B08DFBA00F043B7 /* bitirmedeneme.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bitirmedeneme.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A8D90A82B08DFBA00F043B7 /* bitirmedenemeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bitirmedenemeApp.swift; sourceTree = "<group>"; };
@@ -175,7 +173,6 @@
 				9A0493572B0CED840050FDDE /* ProfileView.swift */,
 				9A0493592B0D40250050FDDE /* ImagePicker.swift */,
 				9A40F5FD2B0E99D80042B440 /* BookData.swift */,
-				9A7995222B0F4B2500BC141D /* TabBarView.swift */,
 				9A7995242B0F4C3800BC141D /* BookCardListView.swift */,
 				9ACDC0D72B112AC200FE770C /* FirebaseImageView.swift */,
 			);
@@ -378,7 +375,6 @@
 				9A8D90A92B08DFBA00F043B7 /* bitirmedenemeApp.swift in Sources */,
 				9A0493582B0CED840050FDDE /* ProfileView.swift in Sources */,
 				9A0493542B0CA54C0050FDDE /* SplashScreen.swift in Sources */,
-				9A7995232B0F4B2500BC141D /* TabBarView.swift in Sources */,
 				9A8D90F52B0904A000F043B7 /* SearchBar.swift in Sources */,
 				9A0493562B0CEB780050FDDE /* BorrowedBooksView.swift in Sources */,
 				9ACDC0D82B112AC200FE770C /* FirebaseImageView.swift in Sources */,

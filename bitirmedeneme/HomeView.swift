@@ -16,11 +16,23 @@ struct HomeView: View {
             NavigationView {
                 VStack {
                     if isHomeView {
-                        SearchBar(searchText: $searchText, placeholder: "")
+                        HStack {
+                            Image("bookstack")
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 100, height: 50)
+                                .padding()
+                            SearchBar(searchText: $searchText, placeholder: "")
                             .padding(.bottom, 10)
+                            .onChange(of: searchText) { newValue in
+                                                                // Burada searchText değeri değiştiğinde yapılacak işlemleri ekleyin
+                                                                print("Search text changed to: \(newValue)")
+                                                                // Örneğin, yeni metinle bir arama işlemi başlatabilirsiniz
+                            }
+                        }
                     }
                     BookCardListView()
-                        .navigationBarTitle("Ana Sayfa")
+                        //.navigationBarTitle("Ana Sayfa")
                 }
             }
             .tabItem {
@@ -29,7 +41,7 @@ struct HomeView: View {
 
             NavigationView {
                 AddBookView(bookViewModel: bookViewModel)
-                    .navigationBarTitle("Kitap Ekle")
+                    //.navigationBarTitle("Kitap Ekle")
             }
             .tabItem {
                 Label("Kitap Ekle", systemImage: "book")
@@ -37,7 +49,7 @@ struct HomeView: View {
 
             NavigationView {
                 ProfileView(bookViewModel: bookViewModel)
-                    .navigationBarTitle("Profil")
+                    //.navigationBarTitle("Profil")
             }
             .tabItem {
                 Label("Profil", systemImage: "person")
@@ -51,6 +63,8 @@ struct HomeView: View {
                 Label("Ödünç Al", systemImage: "person.2.square.stack")
             }
         }
+        .background(Color.white)
+        .accentColor(.orange)
         .environmentObject(bookViewModel)
     }
 
