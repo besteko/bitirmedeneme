@@ -29,7 +29,7 @@ struct BookRowView: View {
                     .cornerRadius(5)
             } else {
                 // Eğer imageDataString boş veya hatalı ise, varsayılan sistem kitap ikonunu kullanın
-                Image(systemName: "book")
+                Image("book")
                     .resizable()
                     .scaledToFit()
                     .frame(width: 50, height: 50)
@@ -39,8 +39,10 @@ struct BookRowView: View {
             VStack(alignment: .leading) {
                 Text(book.title)
                     .font(.headline)
+                    .foregroundColor(.brown)
                 Text(book.author)
                     .font(.subheadline)
+                    .foregroundColor(.brown)
             }
 
             Spacer()
@@ -49,7 +51,7 @@ struct BookRowView: View {
                 removeBookAction()  // Yeni eklenen satır
             }) {
                 Image(systemName: "trash")
-                    .foregroundColor(.red)
+                    .foregroundColor(.orange)
             }
         }
         .padding(.vertical, 8)

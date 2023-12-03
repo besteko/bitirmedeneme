@@ -13,11 +13,10 @@ struct Card: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            
-            if let imageUrl = book.imageUrl, imageUrl != "" {
-                WebImage(url: URL(string: imageUrl) )
+            if let imageUrl = book.imageUrl, !imageUrl.isEmpty {
+                WebImage(url: URL(string: imageUrl))
                     .resizable()
-                    .placeholder(Image("book"))
+                    .placeholder(Image("book_placeholder")) // Placeholder görsel
                     .indicator(.activity) // Activity Indicator
                     .transition(.fade(duration: 0.5)) // Fade Transition with duration
                     .scaledToFill()
@@ -41,6 +40,7 @@ struct Card: View {
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
+            .padding(.horizontal, 8) // Metinlere yatay iç boşluk ekleyin
 
             Spacer()
         }
@@ -65,7 +65,9 @@ struct BookCardListView: View {
                 }
                 .padding()
             }
+            .padding(.horizontal) // Yatay iç boşluk ekleyin
         }
         .navigationBarTitle("Kitaplar")
     }
 }
+

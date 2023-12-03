@@ -8,17 +8,20 @@
 import SwiftUI
 
 struct HomeView: View {
-    
     @State private var searchText = ""
     @StateObject var bookViewModel = BookViewModel()
 
     var body: some View {
         TabView {
             NavigationView {
-                SearchBar(searchText: $searchText, placeholder: "")
-                    .padding(.bottom, 670)
-                BookCardListView()
-                    .navigationBarTitle("Ana Sayfa")
+                VStack {
+                    if isHomeView {
+                        SearchBar(searchText: $searchText, placeholder: "")
+                            .padding(.bottom, 10)
+                    }
+                    BookCardListView()
+                        .navigationBarTitle("Ana Sayfa")
+                }
             }
             .tabItem {
                 Label("Ana Sayfa", systemImage: "house")
@@ -50,14 +53,27 @@ struct HomeView: View {
         }
         .environmentObject(bookViewModel)
     }
-}
 
+    private var isHomeView: Bool {
+        // Burada sadece HomeView seçili olduğunda true döndüren bir mantık ekleyebilirsiniz.
+        return true
+    }
+}
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
     }
 }
+
+
+
+
+
+
+
+
+
 
 
 
