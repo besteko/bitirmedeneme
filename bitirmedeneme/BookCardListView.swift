@@ -53,22 +53,48 @@ struct Card: View {
 
 struct BookCardListView: View {
     @StateObject var bookViewModel: BookViewModel = BookViewModel()
+    @Binding var searchText: String // searchText parametresi ekledik
+
+    @State private var filteredBooks: [Book] = [] // filteredBooks'u burada tanımladık
 
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 16) {
-                ForEach(bookViewModel.books) { book in
+                ForEach(filteredBooks) { book in
                     NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
                         Card(book: book)
                     }
-                    .buttonStyle(PlainButtonStyle()) // NavigationLink için düzgün bir düğme stili
+                    .buttonStyle(PlainButtonStyle())
                 }
                 .padding()
             }
-            .padding(.horizontal) // Yatay iç boşluk ekleyin
+            .padding(.horizontal)
         }
-        //.navigationBarTitle("Kitaplar")
+        .onAppear {
+            // İlk başta tüm kitapları göster
+            filteredBooks = bookViewModel.books
+        }
+        .onChange(of: bookViewModel.books) { _ in
+            // Kitaplar değiştiğinde, search text'i kullanarak filtrele
+            filterBooks()
+        }
+    }
+
+    private func filterBooks() {
+        if searchText.isEmpty {
+            // Eğer search text boşsa, tüm kitapları göster
+            filteredBooks = bookViewModel.books
+        } else {
+            // Eğer search text doluysa, kitapları isim ve yazarına göre filtrele
+            filteredBooks = bookViewModel.books.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText) ||
+                $0.author.localizedCaseInsensitiveContains(searchText)
+            }
+        }
     }
 }
+
+
+
 
 

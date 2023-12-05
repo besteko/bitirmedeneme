@@ -15,9 +15,13 @@ struct FilteredBooksView: View {
 
     var body: some View {
         VStack {
-            SearchBar(searchText: $searchText, placeholder: "Kitap Ara") // Using local searchText
+            SearchBar(searchText: $searchText, placeholder: "Kitap Ara", onCommit: {
+                // Metin girişi tamamlandığında yapılacak işlemler
+                // Örneğin, kitapları arama işlemi burada tetikleyebilirsiniz.
+                filterBooks()
+            })
 
-            List(filteredBooks) { book in // Changed to use filteredBooks instead of bookViewModel.filteredBooks
+            List(filteredBooks) { book in
                 NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
                     BookRowView(book: book) {
                         removeBook(book)
@@ -46,6 +50,13 @@ struct FilteredBooksView: View {
         } else {
             return genreFilteredBooks.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
         }
+    }
+
+    private func filterBooks() {
+        // Arama işlemini gerçekleştir
+        // Bu fonksiyon, metin girişi tamamlandığında çağrılır
+        // Bu noktada kitapları yeniden filtreleyebilir veya başka bir işlem gerçekleştirebilirsiniz.
+        filterBooks()
     }
 }
 
