@@ -12,14 +12,11 @@ struct FilteredBooksView: View {
     var selectedGenre: String
 
     @State private var searchText = "" // Added state for searchText
+    @State private var filteredBooks: [Book] = [] // Added state for filteredBooks
 
     var body: some View {
         VStack {
-            SearchBar(searchText: $searchText, placeholder: "Kitap Ara", onCommit: {
-                // Metin girişi tamamlandığında yapılacak işlemler
-                // Örneğin, kitapları arama işlemi burada tetikleyebilirsiniz.
-                filterBooks()
-            })
+            SearchBar(searchText: $searchText, placeholder: "Kitap Ara", onCommit: filterBooks)
 
             List(filteredBooks) { book in
                 NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
@@ -42,23 +39,19 @@ struct FilteredBooksView: View {
         }
     }
 
-    var filteredBooks: [Book] {
+    private func filterBooks() {
         // Filter the books based on genre and search text
         let genreFilteredBooks = bookViewModel.books.filter { $0.genre == selectedGenre }
         if searchText.isEmpty {
-            return genreFilteredBooks
+            filteredBooks = genreFilteredBooks
         } else {
-            return genreFilteredBooks.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+            filteredBooks = genreFilteredBooks.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
         }
     }
-
-    private func filterBooks() {
-        // Arama işlemini gerçekleştir
-        // Bu fonksiyon, metin girişi tamamlandığında çağrılır
-        // Bu noktada kitapları yeniden filtreleyebilir veya başka bir işlem gerçekleştirebilirsiniz.
-        filterBooks()
-    }
 }
+
+
+
 
 
 

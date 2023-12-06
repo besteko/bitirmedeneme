@@ -11,7 +11,7 @@ import FirebaseAuth
 struct ProfileView: View {
     @ObservedObject var bookViewModel: BookViewModel
     @State private var user: User?
-    @State private var isLoggedOut = false // Ekledik
+    @State private var isLoggedOut = false 
 
     var body: some View {
         VStack {

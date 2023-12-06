@@ -13,6 +13,7 @@ import FirebaseStorage
 class BookViewModel: ObservableObject {
     @Published var books: [Book] = []
     @Published private(set) var genres: [String] = []
+    @Published private(set) var filteredBooks: [Book] = []
 
     private var dbRef: DatabaseReference?
 
@@ -139,6 +140,18 @@ class BookViewModel: ObservableObject {
             }
         }
     }
+    
+    func filterBooks(with searchText: String) -> [Book] {
+           if searchText.isEmpty {
+               return books
+           } else {
+               return books.filter {
+                   $0.title.localizedCaseInsensitiveContains(searchText) ||
+                   $0.author.localizedCaseInsensitiveContains(searchText) ||
+                   ($0.genre?.localizedCaseInsensitiveContains(searchText) ?? false)
+               }
+           }
+       }
 }
 
 

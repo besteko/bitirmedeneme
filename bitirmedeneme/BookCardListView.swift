@@ -52,47 +52,40 @@ struct Card: View {
 }
 
 struct BookCardListView: View {
-    @StateObject var bookViewModel: BookViewModel = BookViewModel()
-    @Binding var searchText: String // searchText parametresi ekledik
-
-    @State private var filteredBooks: [Book] = [] // filteredBooks'u burada tanımladık
+    //@State private var searchText = ""
+    @ObservedObject var bookViewModel: BookViewModel
+    @Binding var searchText: String
+    // ... diğer değişkenler
 
     var body: some View {
-        ScrollView {
-            LazyVStack(alignment: .leading, spacing: 16) {
-                ForEach(filteredBooks) { book in
-                    NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
-                        Card(book: book)
-                    }
-                    .buttonStyle(PlainButtonStyle())
+        VStack {
+            //SearchBar(searchText: $searchText, placeholder: "Kitap Ara", onCommit: <#() -> Void#>)
+
+            List(filterBooks()) { book in
+                NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
+                    Card(book: book)
                 }
-                .padding()
+                .buttonStyle(PlainButtonStyle())
             }
-            .padding(.horizontal)
+            .listStyle(PlainListStyle())
+
         }
-        .onAppear {
-            // İlk başta tüm kitapları göster
-            filteredBooks = bookViewModel.books
-        }
-        .onChange(of: bookViewModel.books) { _ in
-            // Kitaplar değiştiğinde, search text'i kullanarak filtrele
-            filterBooks()
-        }
+        .padding(.horizontal)
     }
 
-    private func filterBooks() {
+    private func filterBooks() -> [Book] {
         if searchText.isEmpty {
-            // Eğer search text boşsa, tüm kitapları göster
-            filteredBooks = bookViewModel.books
+            return bookViewModel.books
         } else {
-            // Eğer search text doluysa, kitapları isim ve yazarına göre filtrele
-            filteredBooks = bookViewModel.books.filter {
+            return bookViewModel.books.filter {
                 $0.title.localizedCaseInsensitiveContains(searchText) ||
-                $0.author.localizedCaseInsensitiveContains(searchText)
+                $0.author.localizedCaseInsensitiveContains(searchText) ||
+                (($0.genre?.localizedCaseInsensitiveContains(searchText)) != nil)
             }
         }
     }
 }
+
 
 
 

@@ -1,16 +1,9 @@
-//
-//  HomeView.swift
-//  bitirmedeneme
-//
-//  Created by Beste Kocaoglu on 18.11.2023.
-//
-
 import SwiftUI
 
 struct HomeView: View {
     @State private var searchText = ""
     @StateObject var bookViewModel = BookViewModel()
-    @State private var filteredBooks: [Book] = []
+    @State private var filteredBooks: [Book] = [] // Burada filteredBooks'u state olarak ekledik
 
     var body: some View {
         TabView {
@@ -23,17 +16,11 @@ struct HomeView: View {
                                 .aspectRatio(contentMode: .fit)
                                 .frame(width: 100, height: 50)
                                 .padding()
-                            SearchBar(searchText: $searchText, placeholder: "", onCommit: {
-                                // Metin girişi tamamlandığında yapılacak işlemler
-                                // Burada kitapları arama işlemini tetikleyebilirsiniz.
-                                filterBooks()
-                                print("filter books")
-                            })
-                            .padding(.bottom, 10)
+                            SearchBar(searchText: $searchText, placeholder: "", onCommit: filterBooks)
+                                .padding(.bottom, 10)
                         }
                     }
-                    BookCardListView(bookViewModel: bookViewModel, searchText: $searchText)
-                        //.navigationBarTitle("Ana Sayfa")
+                    BookCardGridView(bookViewModel: bookViewModel, searchText: $searchText, filteredBooks: $filteredBooks)
                 }
             }
             .tabItem {
@@ -42,7 +29,6 @@ struct HomeView: View {
 
             NavigationView {
                 AddBookView(bookViewModel: bookViewModel)
-                    //.navigationBarTitle("Kitap Ekle")
             }
             .tabItem {
                 Label("Kitap Ekle", systemImage: "book")
@@ -50,7 +36,6 @@ struct HomeView: View {
 
             NavigationView {
                 ProfileView(bookViewModel: bookViewModel)
-                    //.navigationBarTitle("Profil")
             }
             .tabItem {
                 Label("Profil", systemImage: "person")
@@ -68,24 +53,13 @@ struct HomeView: View {
         .accentColor(.orange)
         .environmentObject(bookViewModel)
     }
-    private func filterBooks() {
-            // searchText boşsa, tüm kitapları göster
-            if searchText.isEmpty {
-                filteredBooks = bookViewModel.books
-            } else {
-                print("books title: ", bookViewModel.books.filter({$0.title.localizedStandardContains(searchText)}))
-                print("books author: ", bookViewModel.books.filter({$0.author.localizedStandardContains(searchText)}))
-                // Başlık veya yazar adına göre filtreleme yap
-                filteredBooks = bookViewModel.books.filter { book in
-                    book.title.localizedCaseInsensitiveContains(searchText) ||
-                    book.author.localizedCaseInsensitiveContains(searchText)
-                }
-            }
-        }
 
+    private func filterBooks() {
+        // Dönen değeri kullanarak filteredBooks'u güncelle
+        filteredBooks = bookViewModel.filterBooks(with: searchText)
+    }
 
     private var isHomeView: Bool {
-        // Burada sadece HomeView seçili olduğunda true döndüren bir mantık ekleyebilirsiniz.
         return true
     }
 }
@@ -96,15 +70,31 @@ struct HomeView_Previews: PreviewProvider {
     }
 }
 
+struct BookCardGridView: View {
+    @ObservedObject var bookViewModel: BookViewModel
+    @Binding var searchText: String
+    @Binding var filteredBooks: [Book] // filteredBooks'u binding olarak ekledik
 
+    let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
 
-
-
-
-
-
-
-
-
-
+    var body: some View {
+        ScrollView {
+            LazyVGrid(columns: columns, spacing: 16) {
+                ForEach(filteredBooks) { book in // filteredBooks'u burada kullanıyoruz
+                    NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
+                        Card(book: book)
+                            
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            }
+            .padding()
+        }
+        .padding(.horizontal)
+        .onAppear {
+            // Ekran görüntüsü belirdiğinde, filteredBooks'u güncelle
+            filteredBooks = bookViewModel.filterBooks(with: searchText)
+        }
+    }
+}
 
