@@ -17,7 +17,7 @@ struct BookListView: View {
 
     var body: some View {
         List(bookViewModel.books) { book in
-            NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
+            NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
                 BookRowView(book: book) {
                     removeBook(book)
                 }

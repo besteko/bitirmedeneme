@@ -62,7 +62,7 @@ struct BookCardListView: View {
             //SearchBar(searchText: $searchText, placeholder: "Kitap Ara", onCommit: <#() -> Void#>)
 
             List(filterBooks()) { book in
-                NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
+                NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
                     Card(book: book)
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -80,7 +80,7 @@ struct BookCardListView: View {
             return bookViewModel.books.filter {
                 $0.title.localizedCaseInsensitiveContains(searchText) ||
                 $0.author.localizedCaseInsensitiveContains(searchText) ||
-                (($0.genre?.localizedCaseInsensitiveContains(searchText)) != nil)
+                (($0.genre?.localizedCaseInsensitiveContains(searchText)) != nil) 
             }
         }
     }

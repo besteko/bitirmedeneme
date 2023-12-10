@@ -19,7 +19,7 @@ struct FilteredBooksView: View {
             SearchBar(searchText: $searchText, placeholder: "Kitap Ara", onCommit: filterBooks)
 
             List(filteredBooks) { book in
-                NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
+                NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
                     BookRowView(book: book) {
                         removeBook(book)
                     }

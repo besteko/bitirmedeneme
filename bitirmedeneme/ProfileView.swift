@@ -20,7 +20,7 @@ struct ProfileView: View {
                     .font(.title)
 
                 List(bookViewModel.books.filter { $0.userId == user.uid }) { book in
-                    NavigationLink(destination: BookDetailView(book: book, bookViewModel: bookViewModel)) {
+                    NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
                         BookRowView(book: book, removeBookAction: {})
                     }
                 }

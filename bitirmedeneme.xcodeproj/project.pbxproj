@@ -11,7 +11,9 @@
 		9A0493562B0CEB780050FDDE /* BorrowedBooksView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0493552B0CEB780050FDDE /* BorrowedBooksView.swift */; };
 		9A0493582B0CED840050FDDE /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0493572B0CED840050FDDE /* ProfileView.swift */; };
 		9A04935A2B0D40250050FDDE /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A0493592B0D40250050FDDE /* ImagePicker.swift */; };
+		9A072FAB2B20B10F0010F8F2 /* BookCardGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A072FAA2B20B10F0010F8F2 /* BookCardGridView.swift */; };
 		9A40F5FE2B0E99D80042B440 /* BookData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A40F5FD2B0E99D80042B440 /* BookData.swift */; };
+		9A47D4C72B21B41E006E7B5B /* BookUpdateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A47D4C62B21B41E006E7B5B /* BookUpdateView.swift */; };
 		9A7995252B0F4C3800BC141D /* BookCardListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A7995242B0F4C3800BC141D /* BookCardListView.swift */; };
 		9A8D90A92B08DFBA00F043B7 /* bitirmedenemeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D90A82B08DFBA00F043B7 /* bitirmedenemeApp.swift */; };
 		9A8D90AB2B08DFBA00F043B7 /* RegisterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A8D90AA2B08DFBA00F043B7 /* RegisterView.swift */; };
@@ -63,7 +65,9 @@
 		9A0493552B0CEB780050FDDE /* BorrowedBooksView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorrowedBooksView.swift; sourceTree = "<group>"; };
 		9A0493572B0CED840050FDDE /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
 		9A0493592B0D40250050FDDE /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		9A072FAA2B20B10F0010F8F2 /* BookCardGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCardGridView.swift; sourceTree = "<group>"; };
 		9A40F5FD2B0E99D80042B440 /* BookData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookData.swift; sourceTree = "<group>"; };
+		9A47D4C62B21B41E006E7B5B /* BookUpdateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookUpdateView.swift; sourceTree = "<group>"; };
 		9A5C156E2B10BCE2002BEC64 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9A7995242B0F4C3800BC141D /* BookCardListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookCardListView.swift; sourceTree = "<group>"; };
 		9A8D90A52B08DFBA00F043B7 /* bitirmedeneme.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bitirmedeneme.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -175,6 +179,8 @@
 				9A40F5FD2B0E99D80042B440 /* BookData.swift */,
 				9A7995242B0F4C3800BC141D /* BookCardListView.swift */,
 				9ACDC0D72B112AC200FE770C /* FirebaseImageView.swift */,
+				9A072FAA2B20B10F0010F8F2 /* BookCardGridView.swift */,
+				9A47D4C62B21B41E006E7B5B /* BookUpdateView.swift */,
 			);
 			path = bitirmedeneme;
 			sourceTree = "<group>";
@@ -368,6 +374,7 @@
 				9A8D90ED2B08FF6400F043B7 /* AddBookView.swift in Sources */,
 				9A40F5FE2B0E99D80042B440 /* BookData.swift in Sources */,
 				9A8D90E22B08E84200F043B7 /* LoginView.swift in Sources */,
+				9A47D4C72B21B41E006E7B5B /* BookUpdateView.swift in Sources */,
 				9A8D90E42B08F89000F043B7 /* HomeView.swift in Sources */,
 				9A8D90F32B09038D00F043B7 /* FilteredBooksView.swift in Sources */,
 				9A8D90AB2B08DFBA00F043B7 /* RegisterView.swift in Sources */,
@@ -384,6 +391,7 @@
 				9A8D90F92B0905CF00F043B7 /* BookRowView.swift in Sources */,
 				9A7995252B0F4C3800BC141D /* BookCardListView.swift in Sources */,
 				9A8D90F12B09035F00F043B7 /* BookListView.swift in Sources */,
+				9A072FAB2B20B10F0010F8F2 /* BookCardGridView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

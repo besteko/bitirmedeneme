@@ -12,32 +12,34 @@ import FirebaseStorage
 
 class BookViewModel: ObservableObject {
     @Published var books: [Book] = []
+    @Published var selectedBook: Book?
     @Published private(set) var genres: [String] = []
     @Published private(set) var filteredBooks: [Book] = []
-
+    
     private var dbRef: DatabaseReference?
-
-    init() {
+    
+    init(selectedBook: Book? = nil) {
         configureDatabase()
         fetchBooks()
+        self.selectedBook = selectedBook
     }
-
+    
     private func configureDatabase() {
         dbRef = Database.database().reference().child("books")
     }
-
+    
     private func fetchBooks() {
         dbRef?.observe(.value, with: { [weak self] snapshot in
             var newBooks: [Book] = []
             var newGenres: [String] = []
-
+            
             for child in snapshot.children {
                 if let snapshot = child as? DataSnapshot,
                    let data = snapshot.value as? [String: Any],
                    let bookData = try? JSONSerialization.data(withJSONObject: data),
                    let decodedBook = try? JSONDecoder().decode(Book.self, from: bookData) {
                     newBooks.append(decodedBook)
-
+                    
                     // Kitap türünü genres listesine ekle
                     if let genre = decodedBook.genre,
                        !genre.isEmpty {
@@ -45,60 +47,60 @@ class BookViewModel: ObservableObject {
                     }
                 }
             }
-
+            
             self?.books = newBooks
             self?.genres = Array(Set(newGenres.map { $0.trimmingCharacters(in: .whitespacesAndNewlines) })) // Duplicates'ları temizle
         })
     }
-
+    
     func addBook(book: Book, completion: @escaping (Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid, let dbRef = self.dbRef  else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
             completion(error)
             return
         }
-
+        
         let bookRef = dbRef.childByAutoId()
         var updatedBook = book
         let bookID = bookRef.key
         updatedBook.userId = userId
         updatedBook.id = bookID
         
-
+        
         bookRef.setValue(updatedBook.dictionary) { (error, _) in
             completion(error)
         }
     }
-
+    
     func removeBook(bookID: String, completion: @escaping (Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
             completion(error)
             return
         }
-
+        
         let bookRef = dbRef?.child(bookID)
         bookRef?.removeValue { (error, _) in
             completion(error)
         }
     }
-
+    
     func returnBook(book: Book, completion: @escaping (Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
             completion(error)
             return
         }
-
+        
         guard let updatedBookIndex = books.firstIndex(where: { $0.id == book.id }) else {
             let error = NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Kitap bulunamadı."])
             completion(error)
             return
         }
-
+        
         // İade işlemlerini burada gerçekleştirin
         // Örneğin: books[updatedBookIndex].isBorrowed = false
-
+        
         // Güncellenmiş kitabı Firebase veritabanına yazma
         let bookRef = dbRef?.child(book.id ?? "")
         bookRef?.setValue(books[updatedBookIndex].dictionary) { (error, _) in
@@ -111,17 +113,17 @@ class BookViewModel: ObservableObject {
             print("Resim verisi oluşturulamadı.")
             return
         }
-
+        
         let storage = Storage.storage()
         let storageRef = storage.reference()
-
+        
         if let user = Auth.auth().currentUser {
             let userUID = user.uid
             let imageRef = storageRef.child("images/\(userUID)/\(UUID().uuidString).jpg")
-
+            
             let metadata = StorageMetadata()
             metadata.contentType = "image/jpeg"
-
+            
             let _ = imageRef.putData(imageData, metadata: metadata) { (metadata, error) in
                 if let error = error {
                     print("Yükleme hatası: \(error.localizedDescription)")
@@ -142,19 +144,56 @@ class BookViewModel: ObservableObject {
     }
     
     func filterBooks(with searchText: String) -> [Book] {
-           if searchText.isEmpty {
-               return books
-           } else {
-               return books.filter {
-                   $0.title.localizedCaseInsensitiveContains(searchText) ||
-                   $0.author.localizedCaseInsensitiveContains(searchText) ||
-                   ($0.genre?.localizedCaseInsensitiveContains(searchText) ?? false)
-               }
-           }
-       }
-}
+        if searchText.isEmpty {
+            
+            return books
+        } else {
+            return books.filter {
+                $0.title.localizedCaseInsensitiveContains(searchText) ||
+                $0.author.localizedCaseInsensitiveContains(searchText) ||
+                ($0.genre?.localizedCaseInsensitiveContains(searchText) ?? false)
+            }
+        }
+    }
+    
+    func updateBookInfo(
+        book: Book,
+        completion: @escaping (Error?) -> Void,
+        updatedTitle: String,
+        updatedAuthor: String,
+        updatedGenre: String?,
+        updatedImageUrl: String,
+        updatedIsBorrowed: Bool,
+        updatedImageDataString: String?
+    ) {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
+            completion(error)
+            return
+        }
 
+        // Güncellenmiş kitabın veritabanındaki referansını bul
+        let bookRef = dbRef?.child(book.id ?? "")
 
+        // Güncellenecek alanları belirle
+        var updatedFields: [String: Any] = [:]
+        updatedFields["title"] = updatedTitle
+        updatedFields["author"] = updatedAuthor
+        updatedFields["genre"] = updatedGenre
+        updatedFields["imageUrl"] = updatedImageUrl
+        updatedFields["isBorrowed"] = updatedIsBorrowed
+        updatedFields["imageDataString"] = updatedImageDataString
+
+        // Belirtilen alanları güncelle
+        bookRef?.updateChildValues(updatedFields, withCompletionBlock: { (error, _) in
+            completion(error)
+        })
+    }
+
+     
+     }
+     
+    
 
 
 

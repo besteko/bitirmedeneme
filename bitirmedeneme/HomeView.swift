@@ -20,8 +20,9 @@ struct HomeView: View {
                                 .padding(.bottom, 10)
                         }
                     }
-                    BookCardGridView(bookViewModel: bookViewModel, searchText: $searchText, filteredBooks: $filteredBooks)
+                    BookCardGridView(bookViewModel: bookViewModel, searchText: $searchText)
                 }
+                .background(Color(red: 1.2, green: 1.1, blue: 0.9))
             }
             .tabItem {
                 Label("Ana Sayfa", systemImage: "house")
@@ -55,9 +56,9 @@ struct HomeView: View {
     }
 
     private func filterBooks() {
-        // Dönen değeri kullanarak filteredBooks'u güncelle
         filteredBooks = bookViewModel.filterBooks(with: searchText)
     }
+
 
     private var isHomeView: Bool {
         return true
@@ -69,7 +70,7 @@ struct HomeView_Previews: PreviewProvider {
         HomeView()
     }
 }
-
+/*
 struct BookCardGridView: View {
     @ObservedObject var bookViewModel: BookViewModel
     @Binding var searchText: String
@@ -97,4 +98,4 @@ struct BookCardGridView: View {
         }
     }
 }
-
+*/

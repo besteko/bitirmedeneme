@@ -9,7 +9,7 @@ import Firebase
 import FirebaseAuth
 import FirebaseDatabase
 
-struct Book: Identifiable, Codable {
+class Book: Identifiable, Codable, ObservableObject {
     var id: String?
     var title: String
     var author: String
@@ -36,7 +36,7 @@ struct Book: Identifiable, Codable {
     
     var testImageData: Data? {
         if author == "Mustafa" {
-            
+            // Eğer bir şart sağlanıyorsa, özel bir işlem yapılabilir
         }
         if let imageUrl = imageUrl, let imageData = Data(base64Encoded: imageUrl) {
             return imageData
@@ -49,7 +49,7 @@ struct Book: Identifiable, Codable {
             "id": id ?? "",
             "title": title,
             "author": author,
-            "genre": genre,
+            "genre": genre ?? "",
             "userId": userId ?? "",
             "imageUrl": imageUrl ?? "",
             "isBorrowed": isBorrowed,
@@ -72,7 +72,7 @@ struct Book: Identifiable, Codable {
         self.id = id
         self.title = title
         self.author = author
-        self.genre = genre ?? ""
+        self.genre = genre
         self.userId = userId ?? ""
         self.imageUrl = imageUrl
         self.isBorrowed = isBorrowed
@@ -91,7 +91,7 @@ struct Book: Identifiable, Codable {
         try container.encode(imageDataString, forKey: .imageDataString)
     }
 
-    init(from decoder: Decoder) throws {
+    required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(String.self, forKey: .id)
         title = try container.decode(String.self, forKey: .title)
@@ -102,6 +102,7 @@ struct Book: Identifiable, Codable {
         isBorrowed = try container.decode(Bool.self, forKey: .isBorrowed)
         imageDataString = try container.decode(String.self, forKey: .imageDataString)
     }
+    
 }
 
 extension Book: Equatable {
