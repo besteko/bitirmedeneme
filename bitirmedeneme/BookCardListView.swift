@@ -52,6 +52,7 @@ struct Card: View {
 }
 
 struct BookCardListView: View {
+    @State private var isDetailViewPresented = false
     //@State private var searchText = ""
     @ObservedObject var bookViewModel: BookViewModel
     @Binding var searchText: String
@@ -62,10 +63,9 @@ struct BookCardListView: View {
             //SearchBar(searchText: $searchText, placeholder: "Kitap Ara", onCommit: <#() -> Void#>)
 
             List(filterBooks()) { book in
-                NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
+                NavigationLink(destination: BookDetailView(isPresented: $isDetailViewPresented, bookViewModel: BookViewModel(selectedBook: book))) {
                     Card(book: book)
-                }
-                .buttonStyle(PlainButtonStyle())
+                }                .buttonStyle(PlainButtonStyle())
             }
             .listStyle(PlainListStyle())
 

@@ -9,6 +9,7 @@ import Firebase
 import FirebaseAuth
 
 struct ProfileView: View {
+    @State private var isDetailViewPresented = false
     @ObservedObject var bookViewModel: BookViewModel
     @State private var user: User?
     @State private var isLoggedOut = false 
@@ -20,7 +21,7 @@ struct ProfileView: View {
                     .font(.title)
 
                 List(bookViewModel.books.filter { $0.userId == user.uid }) { book in
-                    NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
+                    NavigationLink(destination: BookDetailView(isPresented: $isDetailViewPresented, bookViewModel: BookViewModel(selectedBook: book))){
                         BookRowView(book: book, removeBookAction: {})
                     }
                 }

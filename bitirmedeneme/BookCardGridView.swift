@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct BookCardGridView: View {
+    @State private var isDetailViewPresented = false
     @ObservedObject var bookViewModel: BookViewModel
     @Binding var searchText: String
 
@@ -17,7 +18,7 @@ struct BookCardGridView: View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(bookViewModel.filterBooks(with: searchText)) { book in
-                    NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
+                    NavigationLink(destination: BookDetailView(isPresented: $isDetailViewPresented, bookViewModel: BookViewModel(selectedBook: book))) {
                         Card(book: book)
                     }
                     .buttonStyle(PlainButtonStyle())

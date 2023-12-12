@@ -9,6 +9,7 @@ import SwiftUI
 
 
 struct BookListView: View {
+    @State private var isDetailViewPresented = false
     @ObservedObject var bookViewModel: BookViewModel
 
     init(bookViewModel: BookViewModel) {
@@ -17,11 +18,12 @@ struct BookListView: View {
 
     var body: some View {
         List(bookViewModel.books) { book in
-            NavigationLink(destination: BookDetailView(bookViewModel: BookViewModel(selectedBook: book))) {
+            NavigationLink(destination: BookDetailView(isPresented: $isDetailViewPresented, bookViewModel: BookViewModel(selectedBook: book))) {
                 BookRowView(book: book) {
                     removeBook(book)
                 }
             }
+
         }
     }
 

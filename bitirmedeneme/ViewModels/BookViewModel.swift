@@ -171,10 +171,10 @@ class BookViewModel: ObservableObject {
             completion(error)
             return
         }
-
+        
         // Güncellenmiş kitabın veritabanındaki referansını bul
         let bookRef = dbRef?.child(book.id ?? "")
-
+        
         // Güncellenecek alanları belirle
         var updatedFields: [String: Any] = [:]
         updatedFields["title"] = updatedTitle
@@ -183,7 +183,7 @@ class BookViewModel: ObservableObject {
         updatedFields["imageUrl"] = updatedImageUrl
         updatedFields["isBorrowed"] = updatedIsBorrowed
         updatedFields["imageDataString"] = updatedImageDataString
-
+        
         // Belirtilen alanları güncelle
         bookRef?.updateChildValues(updatedFields, withCompletionBlock: { (error, _) in
             completion(error)

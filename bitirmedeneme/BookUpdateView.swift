@@ -16,77 +16,98 @@ struct BookUpdateView: View {
     @State public var updatedImageUrl: String
     @State public var updatedIsBorrowed: Bool
     @State public var updatedImageDataString: String
+    @State private var selectedImage: UIImage?
+    @State private var isImagePickerPresented = false
+    @State private var isUpdateSuccessful = false
 
     var body: some View {
-        VStack {
-            TextField("Yeni Başlık", text: $updatedTitle)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
+        NavigationView {
+            VStack {
+                TextField("Yeni Başlık", text: $updatedTitle)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
 
-            TextField("Yeni Yazar", text: $updatedAuthor)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
+                TextField("Yeni Yazar", text: $updatedAuthor)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
 
-            TextField("Yeni Tür", text: $updatedGenre)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
+                TextField("Yeni Tür", text: $updatedGenre)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
 
-            TextField("Yeni Fotoğraf URL", text: $updatedImageUrl)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-
-            Toggle("Ödünç Alındı mı?", isOn: $updatedIsBorrowed)
-                .toggleStyle(SwitchToggleStyle(tint: .blue))
-                .padding()
-
-            TextField("Yeni Resim Data", text: $updatedImageDataString)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-
-            Button("Güncelle") {
-                if let book = bookViewModel.selectedBook {
-                    bookViewModel.updateBookInfo(book: book, completion: { error in
-                        print("")
-                    }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed, updatedImageDataString: updatedImageDataString)
+                Button(action: {
+                    // Resim seçiciyi aç
+                    isImagePickerPresented.toggle()
+                }) {
+                    HStack {
+                        Image(systemName: "photo")
+                        Text("Fotoğraf Seç")
+                    }
                 }
+                .sheet(isPresented: $isImagePickerPresented) {
+                    ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented) { imageUrl in
+                        // Seçilen resmin URL'sini güncelle
+                        updatedImageUrl = imageUrl
+                    }
+                }
+
+                // Seçilen resmi göster
+                            if let selectedImage = selectedImage {
+                                // ImagePicker'dan dönen resmi göster
+                                Image(uiImage: selectedImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(height: 150)
+                }
+
+                Toggle("Ödünç Alındı mı?", isOn: $updatedIsBorrowed)
+                    .toggleStyle(SwitchToggleStyle(tint: .blue))
+                    .padding()
+
+                TextField("Yeni Resim Data", text: $updatedImageDataString)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding()
+
+                Button("Güncelle") {
+                    if let book = bookViewModel.selectedBook {
+                        bookViewModel.updateBookInfo(book: book, completion: { error in
+                            if let error = error {
+                                print("Güncelleme hatası: \(error.localizedDescription)")
+                            } else {
+                                // Güncelleme başarılı, isUpdateSuccessful'ı true yap
+                                isUpdateSuccessful = true
+                            }
+                        }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed, updatedImageDataString: updatedImageDataString)
+                    }
+                }
+                .padding()
+                .foregroundColor(.white)
+                .background(Color.blue)
+                .cornerRadius(15)
+                .fullScreenCover(isPresented: $isUpdateSuccessful) {
+                    if let selectedBook = bookViewModel.selectedBook {
+                        BookDetailView(isPresented: $isUpdateSuccessful, bookViewModel: BookViewModel(selectedBook: selectedBook))
+                            .onDisappear {
+                                isUpdateSuccessful = false
+                            }
+                    }
+                }
+
             }
-            .padding()
-            .foregroundColor(.white)
-            .background(Color.blue)
-            .cornerRadius(15)
-        }
-        .onAppear {
-            // View açıldığında güncellenmiş bilgileri, kitap nesnesinden al
-            updatedTitle = bookViewModel.selectedBook?.title ?? ""
-            updatedAuthor = bookViewModel.selectedBook?.author ?? ""
-            updatedGenre = bookViewModel.selectedBook?.genre ?? ""
-            updatedImageUrl = bookViewModel.selectedBook?.imageUrl ?? ""
-            updatedIsBorrowed = bookViewModel.selectedBook?.isBorrowed ?? false
-            updatedImageDataString = bookViewModel.selectedBook?.imageDataString ?? ""
+            .onAppear {
+                // View açıldığında güncellenmiş bilgileri, kitap nesnesinden al
+                updatedTitle = bookViewModel.selectedBook?.title ?? ""
+                updatedAuthor = bookViewModel.selectedBook?.author ?? ""
+                updatedGenre = bookViewModel.selectedBook?.genre ?? ""
+                updatedImageUrl = bookViewModel.selectedBook?.imageUrl ?? ""
+                updatedIsBorrowed = bookViewModel.selectedBook?.isBorrowed ?? false
+                updatedImageDataString = bookViewModel.selectedBook?.imageDataString ?? ""
+            }
+            //.navigationTitle("Kitap Güncelle")
         }
     }
-
-   /* func updateBookInfo() {
-        // Güncellenmiş bilgileri kullanarak kitap nesnesini güncelle
-        book.title = updatedTitle
-        book.author = updatedAuthor
-        book.genre = updatedGenre
-        book.imageUrl = updatedImageUrl
-        book.isBorrowed = updatedIsBorrowed
-        book.imageDataString = updatedImageDataString
-
-        // ViewModel üzerinden Firebase'e güncelleme talebini ilet
-        bookViewModel.updateBookInfo(book: book) { error in
-            if let error = error {
-                print("Kitap güncellenirken bir hata oluştu: \(error.localizedDescription)")
-            } else {
-                print("Kitap başarıyla güncellendi.")
-                isEditing = false
-            }
-        }
-    }*/
-
 }
+
 
 
 

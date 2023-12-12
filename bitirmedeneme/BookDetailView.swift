@@ -3,14 +3,15 @@ import SDWebImageSwiftUI
 import FirebaseAuth
 
 struct BookDetailView: View {
+    @Binding var isPresented: Bool 
     @ObservedObject var bookViewModel: BookViewModel
     @State private var isEditing = false
     @State private var updatedTitle = ""
     @State private var updatedAuthor = ""
     @State private var updatedImageUrl = ""
-    @State private var updatedGenre = "" // Eksik parametre ekleniyor
-    @State private var updatedIsBorrowed = false // Eksik parametre ekleniyor
-    @State private var updatedImageDataString = "" // Eksik parametre ekleniyor
+    @State private var updatedGenre = ""
+    @State private var updatedIsBorrowed = false
+    @State private var updatedImageDataString = ""
 
     var body: some View {
         ZStack {
