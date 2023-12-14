@@ -11,7 +11,8 @@ struct BookDetailView: View {
     @State private var updatedImageUrl = ""
     @State private var updatedGenre = ""
     @State private var updatedIsBorrowed = false
-    @State private var updatedImageDataString = ""
+   // @State private var updatedImageDataString = ""
+    @State private var refreshID = UUID()
 
     var body: some View {
         ZStack {
@@ -90,9 +91,11 @@ struct BookDetailView: View {
                                 updatedGenre: updatedGenre,
                                 updatedImageUrl: updatedImageUrl,
                                 updatedIsBorrowed: updatedIsBorrowed,
-                                updatedImageDataString: updatedImageDataString
+                               // updatedImageDataString: updatedImageDataString,
+                                refreshID: $refreshID
                             ),
                             isActive: $isEditing
+
                         ) {
                             Text("Kitap Bilgilerini Güncelle")
                                 .padding()

@@ -39,6 +39,9 @@ struct Card: View {
                 Text(book.author)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
+                Text(book.genre!)
+                    .font(.subheadline)
+                    .foregroundColor(.brown)
             }
             .padding(.horizontal, 8) // Metinlere yatay iç boşluk ekleyin
 
@@ -53,10 +56,9 @@ struct Card: View {
 
 struct BookCardListView: View {
     @State private var isDetailViewPresented = false
-    //@State private var searchText = ""
     @ObservedObject var bookViewModel: BookViewModel
     @Binding var searchText: String
-    // ... diğer değişkenler
+    
 
     var body: some View {
         VStack {

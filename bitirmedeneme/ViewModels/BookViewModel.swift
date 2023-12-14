@@ -163,8 +163,8 @@ class BookViewModel: ObservableObject {
         updatedAuthor: String,
         updatedGenre: String?,
         updatedImageUrl: String,
-        updatedIsBorrowed: Bool,
-        updatedImageDataString: String?
+        updatedIsBorrowed: Bool
+        //updatedImageDataString: String?
     ) {
         guard let userId = Auth.auth().currentUser?.uid else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
@@ -173,8 +173,12 @@ class BookViewModel: ObservableObject {
         }
         
         // Güncellenmiş kitabın veritabanındaki referansını bul
-        let bookRef = dbRef?.child(book.id ?? "")
-        
+        guard let bookRef = dbRef?.child(book.id ?? "") else {
+            let error = NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Kitap bulunamadı."])
+            completion(error)
+            return
+        }
+
         // Güncellenecek alanları belirle
         var updatedFields: [String: Any] = [:]
         updatedFields["title"] = updatedTitle
@@ -182,13 +186,22 @@ class BookViewModel: ObservableObject {
         updatedFields["genre"] = updatedGenre
         updatedFields["imageUrl"] = updatedImageUrl
         updatedFields["isBorrowed"] = updatedIsBorrowed
-        updatedFields["imageDataString"] = updatedImageDataString
+       // updatedFields["imageDataString"] = updatedImageDataString
         
         // Belirtilen alanları güncelle
-        bookRef?.updateChildValues(updatedFields, withCompletionBlock: { (error, _) in
+        bookRef.updateChildValues(updatedFields, withCompletionBlock: { (error, _) in
             completion(error)
         })
+
+        // Güncellenen verileri anlık olarak dinle
+        bookRef.observeSingleEvent(of: .value, with: { snapshot in
+            if let updatedBook = try? snapshot.data(as: Book.self) {
+                // Güncellenen kitap verisini alıp işleyebilirsiniz
+                print("Updated Book: \(updatedBook)")
+            }
+        })
     }
+
 
      
      }

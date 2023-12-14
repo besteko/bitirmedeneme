@@ -11,6 +11,7 @@ struct BookCardGridView: View {
     @State private var isDetailViewPresented = false
     @ObservedObject var bookViewModel: BookViewModel
     @Binding var searchText: String
+    @Binding var refreshID: UUID
 
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
 
@@ -27,6 +28,13 @@ struct BookCardGridView: View {
             .padding()
         }
         .padding(.horizontal)
+        .id(refreshID) // Burada refreshID'yi kullan
+    }
+    
+    func refreshing(id: UUID) -> Self {
+        var view = self
+        view.refreshID = id
+        return view
     }
 }
 

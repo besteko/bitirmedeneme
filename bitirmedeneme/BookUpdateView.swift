@@ -15,26 +15,27 @@ struct BookUpdateView: View {
     @State public var updatedGenre: String
     @State public var updatedImageUrl: String
     @State public var updatedIsBorrowed: Bool
-    @State public var updatedImageDataString: String
+    //@State public var updatedImageDataString: String
     @State private var selectedImage: UIImage?
     @State private var isImagePickerPresented = false
     @State private var isUpdateSuccessful = false
-
+    @Binding var refreshID: UUID
+    
     var body: some View {
         NavigationView {
             VStack {
                 TextField("Yeni Başlık", text: $updatedTitle)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
-
+                
                 TextField("Yeni Yazar", text: $updatedAuthor)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
-
+                
                 TextField("Yeni Tür", text: $updatedGenre)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding()
-
+                
                 Button(action: {
                     // Resim seçiciyi aç
                     isImagePickerPresented.toggle()
@@ -50,24 +51,26 @@ struct BookUpdateView: View {
                         updatedImageUrl = imageUrl
                     }
                 }
-
+                
+                
                 // Seçilen resmi göster
-                            if let selectedImage = selectedImage {
-                                // ImagePicker'dan dönen resmi göster
-                                Image(uiImage: selectedImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 150)
+                if let selectedImage = selectedImage {
+                    // ImagePicker'dan dönen resmi göster
+                    Image(uiImage: selectedImage)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 150)
                 }
-
+                
+                
                 Toggle("Ödünç Alındı mı?", isOn: $updatedIsBorrowed)
                     .toggleStyle(SwitchToggleStyle(tint: .blue))
                     .padding()
-
-                TextField("Yeni Resim Data", text: $updatedImageDataString)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding()
-
+                
+                //TextField("Yeni Resim Data", text: $updatedImageDataString)
+                //   .textFieldStyle(RoundedBorderTextFieldStyle())
+                //  .padding()
+                
                 Button("Güncelle") {
                     if let book = bookViewModel.selectedBook {
                         bookViewModel.updateBookInfo(book: book, completion: { error in
@@ -75,9 +78,13 @@ struct BookUpdateView: View {
                                 print("Güncelleme hatası: \(error.localizedDescription)")
                             } else {
                                 // Güncelleme başarılı, isUpdateSuccessful'ı true yap
+                                refreshID = UUID()
                                 isUpdateSuccessful = true
                             }
-                        }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed, updatedImageDataString: updatedImageDataString)
+                        }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed
+                                                     //, updatedImageDataString: updatedImageDataString
+                        )
+                        
                     }
                 }
                 .padding()
@@ -85,14 +92,17 @@ struct BookUpdateView: View {
                 .background(Color.blue)
                 .cornerRadius(15)
                 .fullScreenCover(isPresented: $isUpdateSuccessful) {
-                    if let selectedBook = bookViewModel.selectedBook {
-                        BookDetailView(isPresented: $isUpdateSuccessful, bookViewModel: BookViewModel(selectedBook: selectedBook))
-                            .onDisappear {
-                                isUpdateSuccessful = false
-                            }
+                    NavigationView {
+                        if let selectedBook = bookViewModel.selectedBook {
+                            BookDetailView(isPresented: $isUpdateSuccessful, bookViewModel: BookViewModel(selectedBook: selectedBook))
+                                .onDisappear {
+                                    isUpdateSuccessful = false
+                                }
+                        }
                     }
                 }
 
+                
             }
             .onAppear {
                 // View açıldığında güncellenmiş bilgileri, kitap nesnesinden al
@@ -101,7 +111,7 @@ struct BookUpdateView: View {
                 updatedGenre = bookViewModel.selectedBook?.genre ?? ""
                 updatedImageUrl = bookViewModel.selectedBook?.imageUrl ?? ""
                 updatedIsBorrowed = bookViewModel.selectedBook?.isBorrowed ?? false
-                updatedImageDataString = bookViewModel.selectedBook?.imageDataString ?? ""
+                //updatedImageDataString = bookViewModel.selectedBook?.imageDataString ?? ""
             }
             //.navigationTitle("Kitap Güncelle")
         }

@@ -7,14 +7,15 @@
 
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct BookRowView: View {
     var book: Book
     var removeBookAction: () -> Void   // Yeni eklenen satır
 
     var body: some View {
-        HStack {
-            if let imageDataString = book.imageDataString,
+        HStack{
+           /* if let imageDataString = book.imageDataString,
                let imageData = Data(base64Encoded: imageDataString),
                let uiImage = UIImage(data: imageData) {
 
@@ -34,8 +35,28 @@ struct BookRowView: View {
                     .scaledToFit()
                     .frame(width: 50, height: 50)
                     .cornerRadius(5)
-            }
+            } */
+            if let imageUrl = book.imageUrl, !imageUrl.isEmpty {
+                WebImage(url: URL(string: imageUrl))
+                    .resizable()
+                    .placeholder(Image("book_placeholder")) // Placeholder görsel
+                    .indicator(.activity) // Activity Indicator
+                    .transition(.fade(duration: 0.5)) // Fade Transition with duration
+                    .scaledToFill()
+                    .frame(width: 80, height: 80) // Kare bir frame belirleyin
+                    .clipShape(Circle()) // Daire şeklinde kesme işlemi
+                    .overlay(Circle().stroke(Color.white, lineWidth: 4)) // Beyaz bir kenarlık ekleyin
+                    .shadow(radius: 7) // Gölge ekleyin
 
+            } else {
+                Image(systemName: "book")
+                    .resizable()
+                    .scaledToFill()
+                    .frame(height: 150)
+                    .clipped()
+                    .cornerRadius(10)
+            }
+            
             VStack(alignment: .leading) {
                 Text(book.title)
                     .font(.headline)

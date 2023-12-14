@@ -77,13 +77,16 @@ struct ImagePicker: UIViewControllerRepresentable {
                         print("Dosya URL'si: \(downloadURL)")
                         completionHandler?(downloadURL.absoluteString)
                         // Kitap bilgilerini Firebase Realtime Database'e ekleyin
-                        if  userUID == user.uid  {
-                            let book = Book(title: "Sample Book", author: "Sample Author", genre: "Sample Genre", imageUrl: downloadURL.absoluteString, isBorrowed: false,imageDataString: "SampleImageDataString")
+                       /* if  userUID == user.uid  {
+                            let book = Book(title: "Sample Book", author: "Sample Author", genre: "Sample Genre", imageUrl: downloadURL.absoluteString, isBorrowed: false
+                                           // ,imageDataString: "SampleImageDataString"
+                            )
                             uploadBookData(book: book, userID: userUID)
                         } else {
                             // Kullanıcı UID bulunamadı durumunda bir şey yapma veya hata işleme
                             print("Kullanıcı UID bulunamadı.")
-                        }
+                        }*/
+                        
                         
                         
                     }

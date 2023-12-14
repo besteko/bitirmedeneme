@@ -17,22 +17,22 @@ class Book: Identifiable, Codable, ObservableObject {
     var userId: String
     var imageUrl: String?
     var isBorrowed: Bool
-    var imageDataString: String?
+   // var imageDataString: String?
 
     // Base64 formatında resim string'i için yeni alan
-    var imageData: Data? {
+    /*var imageData: Data? {
         if let imageDataString = imageDataString {
             return Data(base64Encoded: imageDataString)
         }
         return nil
-    }
+    }*/
 
-    var image: UIImage? {
+   /*us var image: UIImage? {
         if let data = imageData {
             return UIImage(data: data)
         }
         return nil
-    }
+    }*/
     
     var testImageData: Data? {
         if author == "Mustafa" {
@@ -53,7 +53,7 @@ class Book: Identifiable, Codable, ObservableObject {
             "userId": userId ?? "",
             "imageUrl": imageUrl ?? "",
             "isBorrowed": isBorrowed,
-            "imageDataString": imageDataString ?? ""
+            //"imageDataString": imageDataString ?? ""
         ]
     }
 
@@ -65,10 +65,12 @@ class Book: Identifiable, Codable, ObservableObject {
         case userId
         case imageUrl
         case isBorrowed
-        case imageDataString
+       // case imageDataString
     }
 
-    init(id: String? = nil, title: String, author: String, genre: String, userId: String? = nil, imageUrl: String? = nil, isBorrowed: Bool = false, imageDataString: String? = nil) {
+    init(id: String? = nil, title: String, author: String, genre: String, userId: String? = nil, imageUrl: String? = nil, isBorrowed: Bool = false
+        // ,imageDataString: String? = nil
+    ) {
         self.id = id
         self.title = title
         self.author = author
@@ -76,7 +78,7 @@ class Book: Identifiable, Codable, ObservableObject {
         self.userId = userId ?? ""
         self.imageUrl = imageUrl
         self.isBorrowed = isBorrowed
-        self.imageDataString = imageDataString
+        //self.imageDataString = imageDataString
     }
 
     func encode(to encoder: Encoder) throws {
@@ -88,7 +90,7 @@ class Book: Identifiable, Codable, ObservableObject {
         try container.encode(userId, forKey: .userId)
         try container.encode(isBorrowed, forKey: .isBorrowed)
         try container.encode(imageUrl, forKey: .imageUrl)
-        try container.encode(imageDataString, forKey: .imageDataString)
+       // try container.encode(imageDataString, forKey: .imageDataString)
     }
 
     required init(from decoder: Decoder) throws {
@@ -100,7 +102,7 @@ class Book: Identifiable, Codable, ObservableObject {
         userId = try container.decode(String.self, forKey: .userId)
         imageUrl = try container.decode(String.self, forKey: .imageUrl)
         isBorrowed = try container.decode(Bool.self, forKey: .isBorrowed)
-        imageDataString = try container.decode(String.self, forKey: .imageDataString)
+       // imageDataString = try container.decode(String.self, forKey: .imageDataString)
     }
     
 }
