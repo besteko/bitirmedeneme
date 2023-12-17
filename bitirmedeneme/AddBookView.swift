@@ -15,10 +15,9 @@ struct AddBookView: View {
     
     @StateObject var bookViewModel: BookViewModel
 
-        init(bookViewModel: BookViewModel) {
-            _bookViewModel = StateObject(wrappedValue: bookViewModel)
-        }
-    
+    init(bookViewModel: BookViewModel) {
+        _bookViewModel = StateObject(wrappedValue: bookViewModel)
+    }
     
     @State private var title = ""
     @State private var author = ""
@@ -28,90 +27,104 @@ struct AddBookView: View {
     @State private var isImagePickerPresented = false
     @State private var showAlert = false
     @State private var alertMessage = ""
+    @State private var isBookAdded = false  // Yeni eklenen satır
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 16) {
-                Image("addbooktab")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 100, height: 100)
-                    .padding(.top, 8)
-                
-                Section(header: Text("Kitap Bilgilerini Giriniz").font(.headline).foregroundColor(.blue)) {
-                    TextField("Kitap Adı", text: $title)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Yazar", text: $author)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                    TextField("Tür", text: $genre)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
+            NavigationView {
+                ZStack {
+                    Color(red: 1.2, green: 1.1, blue: 0.9)
+                        .edgesIgnoringSafeArea(.all)
 
-                Section{
-                    Button(action: {
-                        // Resim seçiciyi aç
-                        isImagePickerPresented.toggle()
-                    }) {
-                        HStack {
-                            Image(systemName: "photo")
-                            Text("Kitap Fotoğrafı Seç")
-                                .foregroundColor(.brown)
+                    VStack(spacing: 16) {
+                        Image("addbooktab")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100)
+                            .padding(.top, 32)
+
+                        VStack {
+                            TextField("Kitap Adı", text: $title)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding()
+
+                            TextField("Yazar", text: $author)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding()
+
+                            TextField("Tür", text: $genre)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .padding()
+                        }
+                        .background(Color.white)
+                        .cornerRadius(10)
+                        .padding()
+
+
+                        HStack{
+                            Button(action: {
+                                isImagePickerPresented.toggle()
+                            }) {
+                                HStack {
+                                    Image(systemName: "photo")
+                                    Text("Kitap Fotoğrafı Seç")
+                                        .foregroundColor(.white)
+                                }
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(8)
+                            }
+                            .sheet(isPresented: $isImagePickerPresented) {
+                                ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented) { selectedImageUrl in
+                                    self.selectedImageUrl = selectedImageUrl
+                                }
+                            }
+
+                            if let selectedImage = selectedImage {
+                                Image(uiImage: selectedImage)
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(height: 150)
+                                    .cornerRadius(8)
+                                    .padding()
+                            }
+
+                        }
+                        Button("Kitabı Ekle") {
+                            addBook()
                         }
                         .padding()
                         .foregroundColor(.white)
-                        .background(Color.blue)
+                        .background(Color.green)
                         .cornerRadius(8)
-                    }
-                    .sheet(isPresented: $isImagePickerPresented) {
-                        ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented) { selectedImageUrl in
-                            self.selectedImageUrl = selectedImageUrl
-                        }
-                    }
 
-                    // Seçilen resmi göster
-                    if let selectedImage = selectedImage {
-                        Image(uiImage: selectedImage)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(height: 150)
-                            .cornerRadius(8)
-                    }
-                }
-
-                Section {
-                    Button("Kitabı Ekle") {
-                        addBook()
                     }
                     .padding()
-                    .foregroundColor(.white)
-                    .background(Color.green)
-                    .cornerRadius(8)
+                    .foregroundColor(.black)
+                    //.navigationBarTitle("Kitap Ekle", displayMode: .inline)
                 }
-                .background(Color(red: 1.2, green: 1.1, blue: 0.9))
             }
-            .padding()
-            //.navigationBarTitle("Kitap Ekle", displayMode: .inline)
         }
 
 
-    }
     private func addBook() {
         guard !title.isEmpty, !author.isEmpty, !genre.isEmpty else {
-                showAlert(message: "Lütfen tüm kitap bilgilerini girin.")
-                return
-            }
+            showAlert(message: "Lütfen tüm kitap bilgilerini girin.")
+            return
+        }
         
         guard selectedImage != nil else {
-                showAlert(message: "Lütfen bir kitap fotoğrafı seçin.")
-                return
-            }
+            showAlert(message: "Lütfen bir kitap fotoğrafı seçin.")
+            return
+        }
 
         guard let currentUser = Auth.auth().currentUser else {
             showAlert(message: "Kullanıcı oturumu açmamış.")
             return
         }
         
-        
+        // Yeni eklenen satır
+        isBookAdded = true
+
         // Kullanıcının ID'sini al
         let userID = currentUser.uid
 
@@ -134,8 +147,11 @@ struct AddBookView: View {
         }
     }
 
-    private func addBook (newBook: Book) {
+    private func addBook(newBook: Book) {
         bookViewModel.addBook(book: newBook) { (error) in
+            // Yeni eklenen satır
+            isBookAdded = false
+
             if let error = error {
                 print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
                 showAlert(message: "Kitap eklenirken bir hata oluştu.")
@@ -146,7 +162,7 @@ struct AddBookView: View {
             }
         }
     }
-    
+
     private func resetForm() {
         // Formdaki değerleri sıfırla
         title = ""
@@ -160,7 +176,8 @@ struct AddBookView: View {
         alertMessage = message
         showAlert = true
     }
-} 
+}
+
 
 
 

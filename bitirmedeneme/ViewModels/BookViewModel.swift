@@ -72,6 +72,20 @@ class BookViewModel: ObservableObject {
         }
     }
     
+    /*func updateBookImageUrl(book: Book, updatedImageUrl: String) {
+            if let userID = Auth.auth().currentUser?.uid {
+                let bookRef = Database.database().reference().child("users").child(userID).child("books").child(book.id!)
+
+                bookRef.updateChildValues(["imageUrl": updatedImageUrl]) { (error, ref) in
+                    if let error = error {
+                        print("URL güncelleme hatası: \(error.localizedDescription)")
+                    } else {
+                        print("URL başarıyla güncellendi.")
+                    }
+                }
+            }
+        }*/
+    
     func removeBook(bookID: String, completion: @escaping (Error?) -> Void) {
         guard let userId = Auth.auth().currentUser?.uid else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
@@ -155,23 +169,21 @@ class BookViewModel: ObservableObject {
             }
         }
     }
-    
-    func updateBookInfo(
+   func updateBookInfo(
         book: Book,
-        completion: @escaping (Error?) -> Void,
         updatedTitle: String,
         updatedAuthor: String,
         updatedGenre: String?,
         updatedImageUrl: String,
-        updatedIsBorrowed: Bool
-        //updatedImageDataString: String?
+        updatedIsBorrowed: Bool,
+        completion: @escaping (Error?) -> Void
     ) {
-        guard let userId = Auth.auth().currentUser?.uid else {
+        guard (Auth.auth().currentUser?.uid) != nil else {
             let error = NSError(domain: "", code: 401, userInfo: [NSLocalizedDescriptionKey: "Kullanıcı oturumu açmamış."])
             completion(error)
             return
         }
-        
+
         // Güncellenmiş kitabın veritabanındaki referansını bul
         guard let bookRef = dbRef?.child(book.id ?? "") else {
             let error = NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Kitap bulunamadı."])
@@ -180,27 +192,24 @@ class BookViewModel: ObservableObject {
         }
 
         // Güncellenecek alanları belirle
-        var updatedFields: [String: Any] = [:]
-        updatedFields["title"] = updatedTitle
-        updatedFields["author"] = updatedAuthor
-        updatedFields["genre"] = updatedGenre
-        updatedFields["imageUrl"] = updatedImageUrl
-        updatedFields["isBorrowed"] = updatedIsBorrowed
-       // updatedFields["imageDataString"] = updatedImageDataString
-        
-        // Belirtilen alanları güncelle
-        bookRef.updateChildValues(updatedFields, withCompletionBlock: { (error, _) in
-            completion(error)
-        })
+        var updatedFields: [String: Any] = [
+            "title": updatedTitle,
+            "author": updatedAuthor,
+            "imageUrl": updatedImageUrl,
+            "isBorrowed": updatedIsBorrowed
+        ]
 
-        // Güncellenen verileri anlık olarak dinle
-        bookRef.observeSingleEvent(of: .value, with: { snapshot in
-            if let updatedBook = try? snapshot.data(as: Book.self) {
-                // Güncellenen kitap verisini alıp işleyebilirsiniz
-                print("Updated Book: \(updatedBook)")
-            }
-        })
+        // Optional genre'yi ekleyin, eğer değeri varsa
+        if let updatedGenre = updatedGenre {
+            updatedFields["genre"] = updatedGenre
+        }
+
+        // Belirtilen alanları güncelle
+        bookRef.updateChildValues(updatedFields) { (error, _) in
+            completion(error)
+        }
     }
+
 
 
      

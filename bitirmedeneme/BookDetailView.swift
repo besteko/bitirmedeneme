@@ -3,7 +3,7 @@ import SDWebImageSwiftUI
 import FirebaseAuth
 
 struct BookDetailView: View {
-    @Binding var isPresented: Bool 
+    @Binding var isPresented: Bool
     @ObservedObject var bookViewModel: BookViewModel
     @State private var isEditing = false
     @State private var updatedTitle = ""

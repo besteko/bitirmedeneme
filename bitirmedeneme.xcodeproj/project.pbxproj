@@ -174,13 +174,13 @@
 				9A8D90F62B09059800F043B7 /* BookDetailView.swift */,
 				9A8D90F82B0905CF00F043B7 /* BookRowView.swift */,
 				9A0493552B0CEB780050FDDE /* BorrowedBooksView.swift */,
+				9A47D4C62B21B41E006E7B5B /* BookUpdateView.swift */,
 				9A0493572B0CED840050FDDE /* ProfileView.swift */,
 				9A0493592B0D40250050FDDE /* ImagePicker.swift */,
 				9A40F5FD2B0E99D80042B440 /* BookData.swift */,
 				9A7995242B0F4C3800BC141D /* BookCardListView.swift */,
 				9ACDC0D72B112AC200FE770C /* FirebaseImageView.swift */,
 				9A072FAA2B20B10F0010F8F2 /* BookCardGridView.swift */,
-				9A47D4C62B21B41E006E7B5B /* BookUpdateView.swift */,
 			);
 			path = bitirmedeneme;
 			sourceTree = "<group>";

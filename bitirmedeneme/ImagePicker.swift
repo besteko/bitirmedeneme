@@ -105,7 +105,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         newBookRef.setValue(bookData.dictionaryRepresentation)
     }
 }
-
+/*
 struct ImagePickerExample: View {
     @State private var selectedImage: UIImage?
     @State private var selectedImageUrl: String?
@@ -138,7 +138,7 @@ struct ImagePickerExample: View {
         }
         .padding()
     }
-}
+}*/
 
 
 struct ImagePickerModifier: ViewModifier {

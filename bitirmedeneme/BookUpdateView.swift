@@ -73,7 +73,14 @@ struct BookUpdateView: View {
                 
                 Button("Güncelle") {
                     if let book = bookViewModel.selectedBook {
-                        bookViewModel.updateBookInfo(book: book, completion: { error in
+                        bookViewModel.updateBookInfo(
+                            book: book,
+                            updatedTitle: updatedTitle,
+                            updatedAuthor: updatedAuthor,
+                            updatedGenre: updatedGenre,
+                            updatedImageUrl: updatedImageUrl,
+                            updatedIsBorrowed: updatedIsBorrowed
+                        ) { error in
                             if let error = error {
                                 print("Güncelleme hatası: \(error.localizedDescription)")
                             } else {
@@ -81,12 +88,10 @@ struct BookUpdateView: View {
                                 refreshID = UUID()
                                 isUpdateSuccessful = true
                             }
-                        }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed
-                                                     //, updatedImageDataString: updatedImageDataString
-                        )
-                        
+                        }
                     }
                 }
+
                 .padding()
                 .foregroundColor(.white)
                 .background(Color.blue)
@@ -117,6 +122,8 @@ struct BookUpdateView: View {
         }
     }
 }
+
+
 
 
 
