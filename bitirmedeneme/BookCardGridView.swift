@@ -16,19 +16,24 @@ struct BookCardGridView: View {
     let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(bookViewModel.filterBooks(with: searchText)) { book in
-                    NavigationLink(destination: BookDetailView(isPresented: $isDetailViewPresented, bookViewModel: BookViewModel(selectedBook: book))) {
-                        Card(book: book)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(bookViewModel.filterBooks(with: searchText)) { book in
+                        NavigationLink(destination: BookDetailView(isPresented: $isDetailViewPresented, bookViewModel: BookViewModel(selectedBook: book))) {
+                            Card(book: book)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
-                    .buttonStyle(PlainButtonStyle())
                 }
+                .padding()
             }
-            .padding()
+            .padding(.horizontal)
+            .id(refreshID) // Burada refreshID'yi kullan
+            .onAppear(perform: {
+                proxy.scrollTo(bookViewModel.filterBooks(with: searchText).first?.id, anchor: .top)
+            })
         }
-        .padding(.horizontal)
-        .id(refreshID) // Burada refreshID'yi kullan
     }
     
     func refreshing(id: UUID) -> Self {

@@ -15,6 +15,7 @@ struct ImagePicker: UIViewControllerRepresentable {
     @Binding var selectedImage: UIImage?
     @Binding var isPickerPresented: Bool
     var selectedImageUrl: ( (String)-> ())
+    var didSelectedImage: ( ()-> ())?
 
     class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
         let parent: ImagePicker
@@ -26,6 +27,7 @@ struct ImagePicker: UIViewControllerRepresentable {
         func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
             if let uiImage = info[.originalImage] as? UIImage {
                 parent.selectedImage = uiImage
+                self.parent.didSelectedImage?()
             }
             parent.isPickerPresented = false
         }
