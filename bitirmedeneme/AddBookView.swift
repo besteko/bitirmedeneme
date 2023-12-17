@@ -14,7 +14,7 @@ import FirebaseStorage
 struct AddBookView: View {
     
     @StateObject var bookViewModel: BookViewModel
-
+    
     init(bookViewModel: BookViewModel) {
         _bookViewModel = StateObject(wrappedValue: bookViewModel)
     }
@@ -28,84 +28,84 @@ struct AddBookView: View {
     @State private var showAlert = false
     @State private var alertMessage = ""
     @State private var isBookAdded = false  // Yeni eklenen satır
-
+    
     var body: some View {
-            NavigationView {
-                ZStack {
-                    Color(red: 1.2, green: 1.1, blue: 0.9)
-                        .edgesIgnoringSafeArea(.all)
-
-                    VStack(spacing: 16) {
-                        Image("addbooktab")
+        NavigationView {
+            ZStack {
+                Color(red: 1.2, green: 1.1, blue: 0.9)
+                    .edgesIgnoringSafeArea(.all)
+                
+                VStack {
+                    Image("addbooktab")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100)
+                        .padding()
+                    
+                    VStack {
+                        TextField("Kitap Adı", text: $title)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
+                        
+                        TextField("Yazar", text: $author)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
+                        
+                        TextField("Tür", text: $genre)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .padding()
+                    }
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .padding()
+                    
+                    Button(action: {
+                        isImagePickerPresented.toggle()
+                    }) {
+                        HStack {
+                            Image(systemName: "photo")
+                            Text("Kitap Fotoğrafı Seç")
+                                .foregroundColor(.white)
+                        }
+                        .padding()
+                        .background(Color.blue)
+                        .cornerRadius(8)
+                    }
+                    .sheet(isPresented: $isImagePickerPresented) {
+                        ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented) { selectedImageUrl in
+                            self.selectedImageUrl = selectedImageUrl
+                        }
+                    }
+                    
+                    if let selectedImage = selectedImage {
+                        Image(uiImage: selectedImage)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 100, height: 100)
-                            .padding(.top, 32)
-
-                        VStack {
-                            TextField("Kitap Adı", text: $title)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding()
-
-                            TextField("Yazar", text: $author)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding()
-
-                            TextField("Tür", text: $genre)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding()
-                        }
-                        .background(Color.white)
-                        .cornerRadius(10)
-                        .padding()
-
-
-                        HStack{
-                            Button(action: {
-                                isImagePickerPresented.toggle()
-                            }) {
-                                HStack {
-                                    Image(systemName: "photo")
-                                    Text("Kitap Fotoğrafı Seç")
-                                        .foregroundColor(.white)
-                                }
-                                .padding()
-                                .background(Color.blue)
-                                .cornerRadius(8)
-                            }
-                            .sheet(isPresented: $isImagePickerPresented) {
-                                ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented) { selectedImageUrl in
-                                    self.selectedImageUrl = selectedImageUrl
-                                }
-                            }
-
-                            if let selectedImage = selectedImage {
-                                Image(uiImage: selectedImage)
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(height: 150)
-                                    .cornerRadius(8)
-                                    .padding()
-                            }
-
-                        }
-                        Button("Kitabı Ekle") {
-                            addBook()
-                        }
-                        .padding()
-                        .foregroundColor(.white)
-                        .background(Color.green)
-                        .cornerRadius(8)
-
+                            .frame(height: 150)
+                            .cornerRadius(8)
+                            .padding()
+                    }
+                    
+                    Spacer()
+                    
+                    Button("Kitabı Ekle") {
+                        addBook()
                     }
                     .padding()
-                    .foregroundColor(.black)
-                    //.navigationBarTitle("Kitap Ekle", displayMode: .inline)
+                    .foregroundColor(.white)
+                    .background(Color.green)
+                    .cornerRadius(8)
+                    .padding(.bottom, 30)  // "Kitabı Ekle" butonu alt boşluk ekleyin
                 }
+                .padding()
+                .foregroundColor(.black)
+                //.navigationBarTitle("Kitap Ekle", displayMode: .inline)
             }
         }
-
-
+        
+    }
+    
+    
     private func addBook() {
         guard !title.isEmpty, !author.isEmpty, !genre.isEmpty else {
             showAlert(message: "Lütfen tüm kitap bilgilerini girin.")
@@ -116,7 +116,7 @@ struct AddBookView: View {
             showAlert(message: "Lütfen bir kitap fotoğrafı seçin.")
             return
         }
-
+        
         guard let currentUser = Auth.auth().currentUser else {
             showAlert(message: "Kullanıcı oturumu açmamış.")
             return
@@ -124,10 +124,10 @@ struct AddBookView: View {
         
         // Yeni eklenen satır
         isBookAdded = true
-
+        
         // Kullanıcının ID'sini al
         let userID = currentUser.uid
-
+        
         var newBook = Book(
             title: title,
             author: author,
@@ -146,12 +146,12 @@ struct AddBookView: View {
             self.addBook(newBook: newBook)
         }
     }
-
+    
     private func addBook(newBook: Book) {
         bookViewModel.addBook(book: newBook) { (error) in
             // Yeni eklenen satır
             isBookAdded = false
-
+            
             if let error = error {
                 print("ViewModel'a kitap ekleme hatası: \(error.localizedDescription)")
                 showAlert(message: "Kitap eklenirken bir hata oluştu.")
@@ -162,7 +162,7 @@ struct AddBookView: View {
             }
         }
     }
-
+    
     private func resetForm() {
         // Formdaki değerleri sıfırla
         title = ""
@@ -170,7 +170,7 @@ struct AddBookView: View {
         genre = ""
         selectedImage = nil
     }
-
+    
     // showAlert fonksiyonunu tanımla
     private func showAlert(message: String) {
         alertMessage = message
