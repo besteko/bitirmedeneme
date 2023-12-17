@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 struct BookUpdateView: View {
     @Binding var isEditing: Bool
@@ -19,6 +20,7 @@ struct BookUpdateView: View {
     @State private var selectedImage: UIImage?
     @State private var isImagePickerPresented = false
     @State private var isUpdateSuccessful = false
+    @State var didSelectedBook = false
     @Binding var refreshID: UUID
     
     var body: some View {
@@ -49,9 +51,11 @@ struct BookUpdateView: View {
                     ImagePicker(selectedImage: $selectedImage, isPickerPresented: $isImagePickerPresented) { imageUrl in
                         // Seçilen resmin URL'sini güncelle
                         updatedImageUrl = imageUrl
+                    } didSelectedImage: {
+                        didSelectedBook = true
                     }
+
                 }
-                
                 
                 // Seçilen resmi göster
                 if let selectedImage = selectedImage {
@@ -60,6 +64,14 @@ struct BookUpdateView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(height: 150)
+                } else {
+                    if let book = bookViewModel.selectedBook, let imageUrl = book.imageUrl, !imageUrl.isEmpty {
+                        WebImage(url: URL(string: imageUrl))
+                            .resizable()
+                            .indicator(.activity)
+                            .scaledToFit()
+                            .frame(height: 150)
+                    }
                 }
                 
                 
@@ -73,22 +85,39 @@ struct BookUpdateView: View {
                 
                 Button("Güncelle") {
                     if let book = bookViewModel.selectedBook {
-                        bookViewModel.updateBookInfo(
-                            book: book,
-                            updatedTitle: updatedTitle,
-                            updatedAuthor: updatedAuthor,
-                            updatedGenre: updatedGenre,
-                            updatedImageUrl: updatedImageUrl,
-                            updatedIsBorrowed: updatedIsBorrowed
-                        ) { error in
-                            if let error = error {
-                                print("Güncelleme hatası: \(error.localizedDescription)")
-                            } else {
-                                // Güncelleme başarılı, isUpdateSuccessful'ı true yap
-                                refreshID = UUID()
-                                isUpdateSuccessful = true
+                        
+                        if let selectedImage = selectedImage, didSelectedBook {
+                            bookViewModel.uploadImage(selectedImage) { imageUrl in
+                                book.imageUrl = imageUrl
+                                updatedImageUrl = imageUrl
+                                bookViewModel.updateBookInfo(book: book, completion: { error in
+                                    if let error = error {
+                                        print("Güncelleme hatası: \(error.localizedDescription)")
+                                    } else {
+                                        // Güncelleme başarılı, isUpdateSuccessful'ı true yap
+                                        refreshID = UUID()
+                                        bookViewModel.selectedBook = book
+                                        isUpdateSuccessful = true
+                                    }
+                                }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed
+                                                             //, updatedImageDataString: updatedImageDataString
+                                )
                             }
+                        } else {
+                            bookViewModel.updateBookInfo(book: book, completion: { error in
+                                if let error = error {
+                                    print("Güncelleme hatası: \(error.localizedDescription)")
+                                } else {
+                                    // Güncelleme başarılı, isUpdateSuccessful'ı true yap
+                                    refreshID = UUID()
+                                    bookViewModel.selectedBook = book
+                                    isUpdateSuccessful = true
+                                }
+                            }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed
+                                                         //, updatedImageDataString: updatedImageDataString
+                            )
                         }
+                        
                     }
                 }
 
@@ -122,8 +151,6 @@ struct BookUpdateView: View {
         }
     }
 }
-
-
 
 
 
