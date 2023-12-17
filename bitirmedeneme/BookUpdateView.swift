@@ -90,7 +90,7 @@ struct BookUpdateView: View {
                             bookViewModel.uploadImage(selectedImage) { imageUrl in
                                 book.imageUrl = imageUrl
                                 updatedImageUrl = imageUrl
-                                bookViewModel.updateBookInfo(book: book, completion: { error in
+                                bookViewModel.updateBookInfo(book: book, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed, completion: { error in
                                     if let error = error {
                                         print("Güncelleme hatası: \(error.localizedDescription)")
                                     } else {
@@ -99,12 +99,10 @@ struct BookUpdateView: View {
                                         bookViewModel.selectedBook = book
                                         isUpdateSuccessful = true
                                     }
-                                }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed
-                                                             //, updatedImageDataString: updatedImageDataString
-                                )
+                                })
                             }
                         } else {
-                            bookViewModel.updateBookInfo(book: book, completion: { error in
+                            bookViewModel.updateBookInfo(book: book, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed, completion: { error in
                                 if let error = error {
                                     print("Güncelleme hatası: \(error.localizedDescription)")
                                 } else {
@@ -113,9 +111,7 @@ struct BookUpdateView: View {
                                     bookViewModel.selectedBook = book
                                     isUpdateSuccessful = true
                                 }
-                            }, updatedTitle: updatedTitle, updatedAuthor: updatedAuthor, updatedGenre: updatedGenre, updatedImageUrl: updatedImageUrl, updatedIsBorrowed: updatedIsBorrowed
-                                                         //, updatedImageDataString: updatedImageDataString
-                            )
+                            })
                         }
                         
                     }
