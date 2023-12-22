@@ -78,7 +78,7 @@ struct BookUpdateView: View {
                 Toggle("Ödünç Alındı mı?", isOn: $updatedIsBorrowed)
                     .toggleStyle(SwitchToggleStyle(tint: .blue))
                     .padding()
-                
+                //Beste
                 //TextField("Yeni Resim Data", text: $updatedImageDataString)
                 //   .textFieldStyle(RoundedBorderTextFieldStyle())
                 //  .padding()

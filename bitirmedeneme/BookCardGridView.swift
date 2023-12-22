@@ -31,6 +31,7 @@ struct BookCardGridView: View {
             .padding(.horizontal)
             .id(refreshID) // Burada refreshID'yi kullan
             .onAppear(perform: {
+                let _ = BookViewModel()
                 proxy.scrollTo(bookViewModel.filterBooks(with: searchText).first?.id, anchor: .top)
             })
         }

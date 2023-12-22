@@ -43,7 +43,7 @@ struct ProfileView: View {
             }
         }
         .padding()
-        .navigationBarTitle("Profil")
+        //.navigationBarTitle("Profil")
         .fullScreenCover(isPresented: $isLoggedOut) {
             SplashScreen() // SplashScreen'a yönlendir
         }
