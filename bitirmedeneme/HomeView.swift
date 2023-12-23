@@ -46,7 +46,7 @@ struct HomeView: View {
 
             NavigationView {
                 BorrowedBooksView(bookViewModel: bookViewModel)
-                    .navigationBarTitle("Ödünç Al/Kirala")
+                   // .navigationBarTitle("Ödünç Al/Kirala")
             }
             .tabItem {
                 Label("Ödünç Al", systemImage: "person.2.square.stack")

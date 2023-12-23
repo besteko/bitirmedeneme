@@ -11,8 +11,8 @@ struct BookDetailView: View {
     @State private var updatedImageUrl = ""
     @State private var updatedGenre = ""
     @State private var updatedIsBorrowed = false
-   // @State private var updatedImageDataString = ""
     @State private var refreshID = UUID()
+    @State private var isBorrowBookViewPresented = false // Yeni ekledik
 
     var body: some View {
         ZStack {
@@ -67,7 +67,8 @@ struct BookDetailView: View {
                                 }
                             }
                         } else {
-                            // Ödünç alma işlemleri burada yapılabilir
+                            // Kitap ödünç alınmamışsa, BookBorrowingView'e yönlendir
+                            isBorrowBookViewPresented = true
                         }
                     }) {
                         Text( (bookViewModel.selectedBook?.isBorrowed ?? false) ? "İade Et" : "Ödünç Al")
@@ -91,7 +92,6 @@ struct BookDetailView: View {
                                 updatedGenre: updatedGenre,
                                 updatedImageUrl: updatedImageUrl,
                                 updatedIsBorrowed: updatedIsBorrowed,
-                               // updatedImageDataString: updatedImageDataString,
                                 refreshID: $refreshID
                             ),
                             isActive: $isEditing
@@ -110,7 +110,9 @@ struct BookDetailView: View {
                 Spacer()
             }
             .padding()
-           // .navigationBarTitle(bookViewModel.selectedBook.title ?? "")
+        }
+        .sheet(isPresented: $isBorrowBookViewPresented) {
+            BookBorrowingView(isPresented: $isBorrowBookViewPresented, bookViewModel: bookViewModel)
         }
     }
 }
