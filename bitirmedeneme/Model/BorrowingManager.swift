@@ -12,8 +12,6 @@ import FirebaseDatabase
 
 class BorrowingManager: ObservableObject {
     @Published var isBorrowingConfirmed = false
-    @Published var borrowedBooks: [BorrowedBook] = []
-    @Published var lentBooks: [BorrowedBook] = []
 
     func borrowBook(book: Book, selectedDurationIndex: Int, address: String, selectedDate: Date) {
         guard let userId = Auth.auth().currentUser?.uid else {
@@ -59,7 +57,7 @@ class BorrowingManager: ObservableObject {
         }
     }
 
-    func fetchBorrowedBooks() {
+    func fetchBorrowedBooks(completionHandler: @escaping (_ books:[BorrowedBook]) -> Void ) {
         guard let userId = Auth.auth().currentUser?.uid else {
             return
         }
@@ -79,11 +77,12 @@ class BorrowingManager: ObservableObject {
             }
 
             // Güncellenen kitap listesini yerel değişkene ata
-            self.borrowedBooks = books
+//            self.borrowedBooks = books
+            completionHandler(books)
         }
     }
 
-    func fetchLentBooks() {
+    func fetchLentBooks(completionHandler: @escaping (_ books:[BorrowedBook]) -> Void ) {
         guard let userId = Auth.auth().currentUser?.uid else {
             return
         }
@@ -103,7 +102,8 @@ class BorrowingManager: ObservableObject {
             }
 
             // Güncellenen kitap listesini yerel değişkene ata
-            self.lentBooks = books
+//            self.lentBooks = books
+            completionHandler(books)
         }
     }
 }

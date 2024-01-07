@@ -11,9 +11,23 @@ import Firebase
 class BorrowedBooksViewModel: ObservableObject {
     @Published var selectedCategory = 0
     @ObservedObject var borrowingManager: BorrowingManager
+    @Published var borrowedBooks: [BorrowedBook] = []
+    @Published var lentBooks: [BorrowedBook] = []
 
     init(borrowingManager: BorrowingManager) {
         self.borrowingManager = borrowingManager
+    }
+    
+    func fetchBorrowedBooks() {
+        self.borrowingManager.fetchBorrowedBooks { books in
+            self.borrowedBooks = books
+        }
+    }
+    
+    func fetchLentBooks() {
+        self.borrowingManager.fetchLentBooks { books in
+            self.lentBooks = books
+        }
     }
 }
 
@@ -38,18 +52,31 @@ struct BorrowedBooksView: View {
 
             // Kitap Listesi
             List {
-                ForEach(viewModel.selectedCategory == 0 ? viewModel.borrowingManager.borrowedBooks : viewModel.borrowingManager.lentBooks) { book in
-                    BorrowedBookRow(book: book)
+                if viewModel.selectedCategory == 0 {
+                    ForEach(viewModel.borrowedBooks) { book in
+                        BorrowedBookRow(book: book)
+                    }
+                } else {
+                    ForEach(viewModel.lentBooks) { book in
+                        BorrowedBookRow(book: book)
+                    }
                 }
             }
             .onAppear {
                 if viewModel.selectedCategory == 0 {
-                    viewModel.borrowingManager.fetchBorrowedBooks()
+                    viewModel.fetchBorrowedBooks()
                 } else {
-                    viewModel.borrowingManager.fetchLentBooks()
+                    viewModel.fetchLentBooks()
                 }
             }
         }
+        .onChange(of: viewModel.selectedCategory, perform: { newValue in
+            if newValue == 0 {
+                viewModel.fetchBorrowedBooks()
+            } else {
+                viewModel.fetchLentBooks()
+            }
+        })
         .background(Color(red: 1.2, green: 1.1, blue: 0.9)) // Arka plan rengi
         .foregroundColor(.white) // Metin rengi
         .edgesIgnoringSafeArea(.all)
