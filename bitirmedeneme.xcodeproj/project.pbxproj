@@ -42,6 +42,8 @@
 		9A9331F52B3776CE00B8DE06 /* BookBorrowingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A9331F42B3776CE00B8DE06 /* BookBorrowingView.swift */; };
 		9AAC04172B360E3C008CE44F /* AvatarGalleryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAC04162B360E3C008CE44F /* AvatarGalleryView.swift */; };
 		9AAC04192B3611D4008CE44F /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AAC04182B3611D4008CE44F /* UserDefaultsManager.swift */; };
+		9AC1566E2B45966400FAB55B /* BorrowingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC1566D2B45966400FAB55B /* BorrowingManager.swift */; };
+		9AC25A7A2B38A004001A2CD5 /* BorrowedBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AC25A792B38A004001A2CD5 /* BorrowedBook.swift */; };
 		9ACDC0D82B112AC200FE770C /* FirebaseImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9ACDC0D72B112AC200FE770C /* FirebaseImageView.swift */; };
 		9ACDC0DB2B112B8F00FE770C /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9ACDC0DA2B112B8F00FE770C /* SDWebImageSwiftUI */; };
 /* End PBXBuildFile section */
@@ -97,6 +99,8 @@
 		9A9331F42B3776CE00B8DE06 /* BookBorrowingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookBorrowingView.swift; sourceTree = "<group>"; };
 		9AAC04162B360E3C008CE44F /* AvatarGalleryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AvatarGalleryView.swift; sourceTree = "<group>"; };
 		9AAC04182B3611D4008CE44F /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
+		9AC1566D2B45966400FAB55B /* BorrowingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorrowingManager.swift; sourceTree = "<group>"; };
+		9AC25A792B38A004001A2CD5 /* BorrowedBook.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BorrowedBook.swift; sourceTree = "<group>"; };
 		9ACDC0D72B112AC200FE770C /* FirebaseImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseImageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -165,12 +169,12 @@
 			children = (
 				9A5C156E2B10BCE2002BEC64 /* Info.plist */,
 				9A8D90A82B08DFBA00F043B7 /* bitirmedenemeApp.swift */,
+				9A8D90AC2B08DFBB00F043B7 /* Assets.xcassets */,
+				9A8D90AE2B08DFBB00F043B7 /* Preview Content */,
 				9A8D90E92B08F96A00F043B7 /* ViewModels */,
 				9A8D90E72B08F8F800F043B7 /* Model */,
 				9A8D90AA2B08DFBA00F043B7 /* RegisterView.swift */,
 				9A8D90E12B08E84200F043B7 /* LoginView.swift */,
-				9A8D90AC2B08DFBB00F043B7 /* Assets.xcassets */,
-				9A8D90AE2B08DFBB00F043B7 /* Preview Content */,
 				9A0493532B0CA54C0050FDDE /* SplashScreen.swift */,
 				9A8D90E32B08F89000F043B7 /* HomeView.swift */,
 				9A8D90EC2B08FF6400F043B7 /* AddBookView.swift */,
@@ -224,6 +228,8 @@
 			children = (
 				9A8D90E52B08F8DB00F043B7 /* Book.swift */,
 				9A40F5FD2B0E99D80042B440 /* BookData.swift */,
+				9AC25A792B38A004001A2CD5 /* BorrowedBook.swift */,
+				9AC1566D2B45966400FAB55B /* BorrowingManager.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -383,6 +389,7 @@
 				9A8D90ED2B08FF6400F043B7 /* AddBookView.swift in Sources */,
 				9A40F5FE2B0E99D80042B440 /* BookData.swift in Sources */,
 				9A8D90E22B08E84200F043B7 /* LoginView.swift in Sources */,
+				9AC1566E2B45966400FAB55B /* BorrowingManager.swift in Sources */,
 				9A47D4C72B21B41E006E7B5B /* BookUpdateView.swift in Sources */,
 				9A8D90E42B08F89000F043B7 /* HomeView.swift in Sources */,
 				9A8D90F32B09038D00F043B7 /* FilteredBooksView.swift in Sources */,
@@ -401,6 +408,7 @@
 				9A04935A2B0D40250050FDDE /* ImagePicker.swift in Sources */,
 				9A8D90EB2B08F98200F043B7 /* BookViewModel.swift in Sources */,
 				9A8D90F92B0905CF00F043B7 /* BookRowView.swift in Sources */,
+				9AC25A7A2B38A004001A2CD5 /* BorrowedBook.swift in Sources */,
 				9A7995252B0F4C3800BC141D /* BookCardListView.swift in Sources */,
 				9A8D90F12B09035F00F043B7 /* BookListView.swift in Sources */,
 				9A072FAB2B20B10F0010F8F2 /* BookCardGridView.swift in Sources */,

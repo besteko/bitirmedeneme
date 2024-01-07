@@ -6,21 +6,24 @@
 //
 
 import SwiftUI
+import Firebase
+import FirebaseAuth
+import FirebaseDatabase
 
 struct BookBorrowingView: View {
     @Binding var isPresented: Bool
+    @ObservedObject var borrowingManager: BorrowingManager
     @ObservedObject var bookViewModel: BookViewModel
     @State private var selectedDurationIndex = 0
     @State private var address = ""
     @State private var isBorrowingConfirmed = false
-
-    // Ödünç alınan kitapları göstermek için BorrowedBooksView'i kullanma
+    @State private var showAlert = false
     @State private var showBorrowedBooksView = false
+    @State private var selectedDate = Date()
 
     var body: some View {
         VStack {
             if let selectedBook = bookViewModel.selectedBook {
-                // Seçilen kitabın adını göster
                 Text("Seçilen Kitap: \(selectedBook.title)")
                     .font(.headline)
                     .padding()
@@ -35,18 +38,15 @@ struct BookBorrowingView: View {
             .pickerStyle(SegmentedPickerStyle())
             .padding()
 
+            DatePicker("Ödünç Tarihi", selection: $selectedDate, in: Date()..., displayedComponents: .date)
+                .padding()
+
             TextField("Adresinizi Girin", text: $address)
                 .padding()
                 .textFieldStyle(RoundedBorderTextFieldStyle())
 
             Button(action: {
-                // Ödünç alma onayı burada yapılacak
-                isBorrowingConfirmed.toggle()
-
-                // Ödünç alım onaylandığında BorrowedBooksView'i göster
-                if isBorrowingConfirmed {
-                    showBorrowedBooksView.toggle()
-                }
+                showAlert.toggle()
             }) {
                 Text("Ödünç Almayı Onayla")
                     .padding()
@@ -57,27 +57,36 @@ struct BookBorrowingView: View {
             }
             .padding()
 
-            // Ödünç alım onayı yapıldığında BorrowedBooksView'i göster
             if isBorrowingConfirmed {
-                Text("Kitap ödünç alındı!").foregroundColor(.green).bold()
+                Text("Kitap ödünç alındı!")
+                    .foregroundColor(.green)
+                    .bold()
+                    .padding()
+            }
+        }
+        .confirmationDialog("Kitabı ödünç almak istediğinize emin misiniz?", isPresented: $showAlert) {
+            Button("Evet") {
+                borrowingManager.borrowBook(book: bookViewModel.selectedBook!, selectedDurationIndex: selectedDurationIndex, address: address, selectedDate: selectedDate)
             }
 
-            // BorrowedBooksView'i gösterme
+            Button("Hayır") {
+                isBorrowingConfirmed = false
+            }
+        }
+        .background(
             NavigationLink(
-                destination: BorrowedBooksView(bookViewModel: bookViewModel),
+                destination: BorrowedBooksView(viewModel: BorrowedBooksViewModel(borrowingManager: borrowingManager), bookViewModel: bookViewModel),
                 isActive: $showBorrowedBooksView
             ) {
                 EmptyView()
             }
-        }
-        .padding()
+            .hidden()
+        )
     }
 }
 
-struct BookBorrowingView_Previews: PreviewProvider {
-    static var previews: some View {
-        BookBorrowingView(isPresented: .constant(true), bookViewModel: BookViewModel())
-    }
-}
+
+
+
 
 

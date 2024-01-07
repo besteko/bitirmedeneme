@@ -45,7 +45,7 @@ struct HomeView: View {
             }
 
             NavigationView {
-                BorrowedBooksView(bookViewModel: bookViewModel)
+                BorrowedBooksView(viewModel: BorrowedBooksViewModel(borrowingManager: BorrowingManager()), bookViewModel: bookViewModel)
                    // .navigationBarTitle("Ödünç Al/Kirala")
             }
             .tabItem {

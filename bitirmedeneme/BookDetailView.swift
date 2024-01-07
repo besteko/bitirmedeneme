@@ -12,7 +12,7 @@ struct BookDetailView: View {
     @State private var updatedGenre = ""
     @State private var updatedIsBorrowed = false
     @State private var refreshID = UUID()
-    @State private var isBorrowBookViewPresented = false // Yeni ekledik
+    @State private var isBorrowBookViewPresented = false
 
     var body: some View {
         ZStack {
@@ -50,8 +50,8 @@ struct BookDetailView: View {
                     .foregroundColor(.secondary)
                     .padding(.bottom, 10)
 
-                Text( (bookViewModel.selectedBook?.isBorrowed ?? false) ? "Ödünç Alındı" : "Müsait")
-                    .foregroundColor( (bookViewModel.selectedBook?.isBorrowed ?? false) ? .red : .green)
+                Text(bookViewModel.selectedBook?.isBorrowed ?? false ? "Ödünç Alındı" : "Müsait")
+                    .foregroundColor(bookViewModel.selectedBook?.isBorrowed ?? false ? .red : .green)
                     .font(.headline)
                     .bold()
                     .padding()
@@ -67,15 +67,14 @@ struct BookDetailView: View {
                                 }
                             }
                         } else {
-                            // Kitap ödünç alınmamışsa, BookBorrowingView'e yönlendir
                             isBorrowBookViewPresented = true
                         }
                     }) {
-                        Text( (bookViewModel.selectedBook?.isBorrowed ?? false) ? "İade Et" : "Ödünç Al")
+                        Text(bookViewModel.selectedBook?.isBorrowed ?? false ? "İade Et" : "Ödünç Al")
                             .padding()
                             .foregroundColor(.white)
                             .font(.headline)
-                            .background( (bookViewModel.selectedBook?.isBorrowed ?? false) ? Color.red : Color.green)
+                            .background(bookViewModel.selectedBook?.isBorrowed ?? false ? Color.red : Color.green)
                             .cornerRadius(15)
                     }
                     .padding(.bottom, 20)
@@ -95,7 +94,6 @@ struct BookDetailView: View {
                                 refreshID: $refreshID
                             ),
                             isActive: $isEditing
-
                         ) {
                             Text("Kitap Bilgilerini Güncelle")
                                 .padding()
@@ -112,10 +110,11 @@ struct BookDetailView: View {
             .padding()
         }
         .sheet(isPresented: $isBorrowBookViewPresented) {
-            BookBorrowingView(isPresented: $isBorrowBookViewPresented, bookViewModel: bookViewModel)
+            BookBorrowingView(isPresented: $isBorrowBookViewPresented, borrowingManager: BorrowingManager(), bookViewModel: bookViewModel)
         }
     }
 }
+
 
 
 
